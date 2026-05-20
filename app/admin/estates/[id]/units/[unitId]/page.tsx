@@ -11,8 +11,9 @@ import { TechnicalForm } from '@/components/admin/unit-editor/technical-form'
 import { FinancialForm } from '@/components/admin/unit-editor/financial-form'
 import { DocumentsTab } from '@/components/admin/unit-editor/documents-tab'
 import { PhotosTab } from '@/components/admin/unit-editor/photos-tab'
+import { ServicesTab } from '@/components/admin/unit-editor/services-tab'
 import { InviteOwnerDialog } from '@/components/admin/invite-owner-dialog'
-import type { Unit, Document } from '@/lib/types'
+import type { Unit, Document, UnitService } from '@/lib/types'
 
 interface Photo {
   id: string
@@ -79,6 +80,14 @@ export default async function UnitDetailPage({
     .limit(1)
     .maybeSingle()
 
+  const { data: servicesData } = await supabase
+    .from('unit_services')
+    .select('*')
+    .eq('unit_id', unitId)
+    .order('created_at', { ascending: true })
+
+  const services = (servicesData ?? []) as UnitService[]
+
   let ownerEmail: string | null = null
   if (ownerRow) {
     const { data: ownerUser } = await adminClient.auth.admin.getUserById(ownerRow.user_id)
@@ -134,6 +143,7 @@ export default async function UnitDetailPage({
           <TabsTrigger value="financial">Finansiniai duomenys</TabsTrigger>
           <TabsTrigger value="documents">Dokumentai</TabsTrigger>
           <TabsTrigger value="photos">Nuotraukos</TabsTrigger>
+          <TabsTrigger value="services">Paslaugos</TabsTrigger>
         </TabsList>
 
         <TabsContent value="technical">
@@ -150,6 +160,10 @@ export default async function UnitDetailPage({
 
         <TabsContent value="photos">
           <PhotosTab unitId={unitId} photos={photos} />
+        </TabsContent>
+
+        <TabsContent value="services">
+          <ServicesTab unitId={unitId} services={services} />
         </TabsContent>
       </Tabs>
     </div>
