@@ -4,6 +4,8 @@ import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import type { DefectStatus } from '@/lib/types'
+import { Resend } from 'resend'
+import { DefectStatusEmail } from '@/components/email/defect-status-email'
 
 async function requireAdmin() {
   const supabase = await createClient()
@@ -55,16 +57,58 @@ async function requireOwner() {
 
 export async function updateDefectStatus(
   defectId: string,
-  status: DefectStatus
+  status: DefectStatus,
+  adminMessage?: string
 ): Promise<void> {
   const { supabase } = await requireAdmin()
 
-  const { error } = await supabase
+  const { data: defect, error } = await supabase
     .from('defects')
     .update({ status })
     .eq('id', defectId)
+    .select('title, unit_id')
+    .single()
 
   if (error) throw new Error(error.message)
+
+  // Send status update email to owner — non-blocking
+  try {
+    const adminClient = createAdminClient()
+
+    const { data: ownership } = await supabase
+      .from('unit_owners')
+      .select('user_id')
+      .eq('unit_id', defect.unit_id)
+      .not('accepted_at', 'is', null)
+      .maybeSingle()
+
+    if (ownership?.user_id) {
+      const { data: userData } = await adminClient.auth.admin.getUserById(
+        ownership.user_id
+      )
+      const ownerEmail = userData?.user?.email
+
+      if (ownerEmail) {
+        const resend = new Resend(process.env.RESEND_API_KEY)
+        const portalUrl = `${process.env.NEXT_PUBLIC_APP_URL}/portal/defects/${defectId}`
+
+        await resend.emails.send({
+          from: process.env.RESEND_FROM_EMAIL!,
+          to: ownerEmail,
+          subject: `Defekto statusas atnaujintas`,
+          react: DefectStatusEmail({
+            defectTitle: defect.title,
+            newStatus: status,
+            adminMessage,
+            portalUrl,
+            ownerEmail,
+          }),
+        })
+      }
+    }
+  } catch (emailErr) {
+    console.error('Failed to send defect status email:', emailErr)
+  }
 
   revalidatePath('/admin/defects')
   revalidatePath(`/admin/defects/${defectId}`)

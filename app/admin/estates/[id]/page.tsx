@@ -13,6 +13,7 @@ import {
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { ChevronLeft, Pencil } from 'lucide-react'
+import { InviteOwnerDialog } from '@/components/admin/invite-owner-dialog'
 
 interface UnitRow {
   id: string
@@ -160,12 +161,21 @@ export default async function EstateDetailPage({
                     </TableCell>
                     <TableCell>{formatDate(owner?.accepted_at ?? null)}</TableCell>
                     <TableCell className="text-right">
-                      <Button asChild variant="ghost" size="sm">
-                        <Link href={`/admin/estates/${id}/units/${unit.id}`}>
-                          <Pencil className="size-4 mr-1" />
-                          Redaguoti
-                        </Link>
-                      </Button>
+                      <div className="flex items-center justify-end gap-2">
+                        {!owner?.accepted_at && (
+                          <InviteOwnerDialog
+                            unitId={unit.id}
+                            unitNumber={unit.unit_number}
+                            estateId={id}
+                          />
+                        )}
+                        <Button asChild variant="ghost" size="sm">
+                          <Link href={`/admin/estates/${id}/units/${unit.id}`}>
+                            <Pencil className="size-4 mr-1" />
+                            Redaguoti
+                          </Link>
+                        </Button>
+                      </div>
                     </TableCell>
                   </TableRow>
                 )

@@ -45,12 +45,21 @@ export function InviteForm() {
     setLoading(true)
     setError(null)
 
-    const { error } = await supabase.auth.updateUser({ password })
+    const { data: updateData, error: updateError } = await supabase.auth.updateUser({ password })
 
-    if (error) {
+    if (updateError) {
       setError('Klaida nustatant slaptažodį. Bandykite dar kartą.')
       setLoading(false)
       return
+    }
+
+    // Mark the unit_owners record as accepted
+    if (updateData.user) {
+      await supabase
+        .from('unit_owners')
+        .update({ accepted_at: new Date().toISOString() })
+        .eq('user_id', updateData.user.id)
+        .is('accepted_at', null)
     }
 
     router.push('/portal/pagrindinis')
