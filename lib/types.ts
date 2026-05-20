@@ -5,6 +5,7 @@ export interface Estate {
   name: string
   address: string
   description: string | null
+  cover_photo_path: string | null
   created_at: string
 }
 
@@ -100,6 +101,7 @@ export interface UnitWithOwner extends Unit {
 
 export interface EstateWithUnitCount extends Estate {
   unit_count: number
+  cover_image_url: string | null
 }
 
 export type ContactCategory =
@@ -134,4 +136,16 @@ export interface ContactDocument {
 
 export interface ContactWithDocuments extends Contact {
   documents: ContactDocument[]
+}
+
+export type ServiceCategory = 'electrical' | 'water' | 'heating' | 'waste'
+
+export interface UnitService {
+  id: string
+  unit_id: string
+  category: ServiceCategory
+  meter_number: string | null
+  description: string | null
+  completed_at: string | null
+  created_at: string
 }
