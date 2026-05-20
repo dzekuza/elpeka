@@ -1,0 +1,42 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git *)",
+      "Bash(npm *)",
+      "Bash(npx *)",
+      "Bash(node *)",
+      "Bash(mkdir *)",
+      "Bash(cp *)",
+      "Bash(mv *)",
+      "Bash(rsync *)",
+      "Bash(ls *)",
+      "Bash(find *)",
+      "Bash(cat *)",
+      "Bash(tsc *)",
+      "Bash(rm *)"
+    ],
+    "defaultMode": "bypassPermissions"
+  },
+  "hooks": {
+    "WorktreeCreate": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "input=$(cat); path=$(echo \"$input\" | jq -r '.path // empty'); branch=$(echo \"$input\" | jq -r '.branch // empty'); if [ -n \"$path\" ] && [ -n \"$branch\" ]; then git worktree add \"$path\" -b \"$branch\" HEAD 2>/dev/null || git worktree add \"$path\" HEAD 2>/dev/null || true; fi"
+          }
+        ]
+      }
+    ],
+    "WorktreeRemove": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "input=$(cat); path=$(echo \"$input\" | jq -r '.path // empty'); if [ -n \"$path\" ]; then git worktree remove \"$path\" --force 2>/dev/null || true; fi"
+          }
+        ]
+      }
+    ]
+  }
+}
