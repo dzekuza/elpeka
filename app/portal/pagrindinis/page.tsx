@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { StepsAccordion, type PurchaseStep } from '@/components/portal/steps-accordion'
@@ -150,7 +151,7 @@ export default async function PagrindiniPage() {
         {/* Main photo */}
         <div className="relative flex-1 rounded-2xl overflow-hidden min-w-0">
           {mainPhoto ? (
-            <img src={mainPhoto} alt={estate?.name ?? ''} className="absolute inset-0 w-full h-full object-cover" />
+            <Image src={mainPhoto} alt={estate?.name ?? ''} fill className="object-cover" />
           ) : (
             <div className="absolute inset-0 bg-sidebar" />
           )}
@@ -172,7 +173,7 @@ export default async function PagrindiniPage() {
               return (
                 <div key={i} className="relative rounded-2xl overflow-hidden bg-muted">
                   {url && (
-                    <img src={url} alt="" className="absolute inset-0 w-full h-full object-cover" />
+                    <Image src={url} alt="" fill className="object-cover" />
                   )}
                   {isLast && extraCount > 0 && (
                     <>

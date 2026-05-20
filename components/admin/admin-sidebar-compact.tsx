@@ -31,14 +31,13 @@ export function AdminSidebarCompact({ userEmail }: AdminSidebarCompactProps) {
   const router = useRouter()
   const supabase = createClient()
 
-  const [expanded, setExpanded] = useState(true)
+  const [expanded, setExpanded] = useState(() => {
+    if (typeof window === 'undefined') return true
+    const stored = localStorage.getItem('admin-sidebar-expanded')
+    return stored !== null ? stored === 'true' : true
+  })
   const [profileOpen, setProfileOpen] = useState(false)
   const profileRef = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    const stored = localStorage.getItem('admin-sidebar-expanded')
-    if (stored !== null) setExpanded(stored === 'true')
-  }, [])
 
   useEffect(() => {
     localStorage.setItem('admin-sidebar-expanded', String(expanded))

@@ -89,7 +89,7 @@ export async function uploadUnitDocument(
   unitId: string,
   formData: FormData
 ): Promise<void> {
-  const { supabase, user } = await requireAdmin()
+  const { supabase } = await requireAdmin()
   const adminClient = createAdminClient()
 
   const file = formData.get('file') as File | null
@@ -102,7 +102,6 @@ export async function uploadUnitDocument(
 
   validateDocumentUpload(file)
 
-  const fileExt = file.name.split('.').pop()
   const fileName = `${Date.now()}-${file.name}`
   const storagePath = `documents/${unitId}/${fileName}`
 

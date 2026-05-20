@@ -4,7 +4,7 @@ import { useState, useTransition } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
-import { PencilSimpleLine, Trash, UserPlus } from '@phosphor-icons/react'
+import { PencilSimpleLine, Trash } from '@phosphor-icons/react'
 import { deleteUnits } from '@/lib/actions/units'
 import { InviteOwnerDialog } from './invite-owner-dialog'
 import { UnitFormDialog } from './unit-form-dialog'
@@ -71,7 +71,7 @@ export function UnitsDataTable({ estateId, units }: UnitsDataTableProps) {
   function toggleRow(id: string) {
     setSelected((prev) => {
       const next = new Set(prev)
-      next.has(id) ? next.delete(id) : next.add(id)
+      if (next.has(id)) { next.delete(id) } else { next.add(id) }
       return next
     })
   }

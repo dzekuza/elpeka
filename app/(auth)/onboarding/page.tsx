@@ -17,23 +17,23 @@ const features = [
 
 export default function OnboardingPage() {
   return (
-    <div className="relative flex min-h-screen bg-[#f2f1f0]">
+    <div className="relative flex min-h-screen flex-col bg-[#f2f1f0] md:flex-row">
       {/* Logo — top left */}
-      <div className="absolute left-8 top-8 z-10">
+      <div className="absolute left-6 top-6 z-10 md:left-8 md:top-8">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src="/logotype-dark.svg" alt="ELPEKAS" width={102} height={41} />
       </div>
 
       {/* Left: content */}
-      <div className="flex w-1/2 items-center px-20">
-        <div className="flex flex-col gap-8 max-w-lg">
-          <h1 className="text-[28px] font-medium leading-10 tracking-[-0.02em] text-foreground">
+      <div className="flex w-full items-center px-6 pb-10 pt-24 md:w-1/2 md:px-20 md:py-0">
+        <div className="flex w-full flex-col gap-8 md:max-w-lg">
+          <h1 className="text-[24px] font-medium leading-9 tracking-[-0.02em] text-foreground md:text-[28px] md:leading-10">
             Sveiki atvykę į <strong className="font-bold">Elpekas</strong> kliento portalą
           </h1>
 
           <div className="flex flex-col gap-[18px] opacity-80">
             <p className="text-base leading-6 text-foreground">
-              Prieigą prie šio portalo gavote įsigiję nekilnojamąjį turtą viename iš „Elpekas"
+              Prieigą prie šio portalo gavote įsigiję nekilnojamąjį turtą viename iš „Elpekas&#8220;
               projektų. Čia galite valdyti su jūsų būstu / patalpomis susijusią informaciją ir
               gauti pagalbą.
             </p>
@@ -58,8 +58,8 @@ export default function OnboardingPage() {
       </div>
 
       {/* Right: hero image */}
-      <div className="flex w-1/2 items-center p-4">
-        <div className="relative h-[780px] w-full overflow-hidden rounded-3xl">
+      <div className="flex flex-1 items-stretch p-4 md:w-1/2 md:flex-none md:items-center">
+        <div className="relative w-full overflow-hidden rounded-3xl md:h-[780px]">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src="/onboarding-hero.png"

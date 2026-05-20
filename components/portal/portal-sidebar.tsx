@@ -44,14 +44,13 @@ export function PortalSidebar({ userEmail, activeDefectCount }: PortalSidebarPro
   const router = useRouter()
   const supabase = createClient()
 
-  const [expanded, setExpanded] = useState(true)
+  const [expanded, setExpanded] = useState(() => {
+    if (typeof window === 'undefined') return true
+    const stored = localStorage.getItem('portal-sidebar-expanded')
+    return stored !== null ? stored === 'true' : true
+  })
   const [profileOpen, setProfileOpen] = useState(false)
   const profileRef = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    const stored = localStorage.getItem('portal-sidebar-expanded')
-    if (stored !== null) setExpanded(stored === 'true')
-  }, [])
 
   useEffect(() => {
     localStorage.setItem('portal-sidebar-expanded', String(expanded))

@@ -1,9 +1,8 @@
 'use client'
 
 import Link from 'next/link'
-import { usePathname, useRouter } from 'next/navigation'
+import { usePathname } from 'next/navigation'
 import { Camera, FileText, HouseSimple, Phone, WarningCircle } from '@phosphor-icons/react'
-import { createClient } from '@/lib/supabase/client'
 
 const navItems = [
   { href: '/portal/pagrindinis', label: 'Pagrindinis', icon: HouseSimple },
@@ -19,13 +18,6 @@ interface PortalBottomNavProps {
 
 export function PortalBottomNav({ activeDefectCount }: PortalBottomNavProps) {
   const pathname = usePathname()
-  const router = useRouter()
-  const supabase = createClient()
-
-  async function handleSignOut() {
-    await supabase.auth.signOut()
-    router.push('/login')
-  }
 
   return (
     <nav className="fixed bottom-0 inset-x-0 z-50 md:hidden bg-card border-t border-border">

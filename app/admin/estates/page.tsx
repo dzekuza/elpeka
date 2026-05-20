@@ -25,6 +25,7 @@ export default async function EstatesPage() {
     const unit_count = Array.isArray(unitsArr) && unitsArr.length > 0
       ? unitsArr[0].count
       : 0
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { units: _units, ...rest } = row
     return { ...rest, unit_count }
   })
