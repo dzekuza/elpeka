@@ -16,13 +16,7 @@ export default async function DefectDetailPage({ params }: PageProps) {
 
   if (!user) redirect('/login')
 
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('role')
-    .eq('id', user.id)
-    .single()
-
-  if (profile?.role !== 'admin') redirect('/portal')
+  if (user.user_metadata?.role !== 'admin') redirect('/portal')
 
   const { id } = await params
   const adminClient = createAdminClient()

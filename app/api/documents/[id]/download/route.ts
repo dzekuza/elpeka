@@ -29,13 +29,7 @@ export async function GET(
     return NextResponse.json({ error: 'Not found' }, { status: 404 })
   }
 
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('role')
-    .eq('id', user.id)
-    .single()
-
-  if (profile?.role !== 'admin') {
+  if (user.user_metadata?.role !== 'admin') {
     const { data: ownership } = await supabase
       .from('unit_owners')
       .select('id')

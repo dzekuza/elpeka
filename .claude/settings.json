@@ -13,11 +13,25 @@
       "Bash(find *)",
       "Bash(cat *)",
       "Bash(tsc *)",
-      "Bash(rm *)"
+      "Bash(rm *)",
+      "Bash(next *)"
     ],
     "defaultMode": "bypassPermissions"
   },
   "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cd /Users/rysardgvozdovic/Desktop/projects/elpeka && npx tsc --noEmit 2>&1 | tail -20",
+            "timeout": 60,
+            "statusMessage": "Type-checking..."
+          }
+        ]
+      }
+    ],
     "WorktreeCreate": [
       {
         "hooks": [

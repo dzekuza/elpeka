@@ -5,7 +5,7 @@ import {
   Camera,
   FileText,
   Headset,
-} from '@phosphor-icons/react'
+} from '@phosphor-icons/react/dist/ssr'
 import { Button } from '@/components/ui/button'
 
 const features = [

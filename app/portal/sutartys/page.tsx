@@ -3,7 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { DownloadSimple } from '@phosphor-icons/react'
+import { DownloadSimple } from '@phosphor-icons/react/dist/ssr'
 
 function formatDate(d: string) {
   return new Date(d).toLocaleDateString('lt-LT', { year: 'numeric', month: '2-digit', day: '2-digit' })

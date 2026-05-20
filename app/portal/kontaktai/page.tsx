@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Phone, EnvelopeOpen, MapPin, Clock } from '@phosphor-icons/react'
+import { Phone, EnvelopeOpen, MapPin, Clock } from '@phosphor-icons/react/dist/ssr'
 
 const contacts = [
   { icon: MapPin, label: 'Adresas', value: 'Gedimino pr. 1, Vilnius, Lietuva' },

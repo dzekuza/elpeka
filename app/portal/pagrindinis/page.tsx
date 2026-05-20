@@ -2,7 +2,7 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Buildings, Stack, Resize, Hash } from '@phosphor-icons/react'
+import { Buildings, Stack, Resize, Hash } from '@phosphor-icons/react/dist/ssr'
 
 export default async function PagrindiniPage() {
   const supabase = await createClient()

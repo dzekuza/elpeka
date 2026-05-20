@@ -3,7 +3,7 @@ import { EstateWithUnitCount } from '@/lib/types'
 import { EstateTable } from '@/components/admin/estate-table'
 import { EstateFormDialog } from '@/components/admin/estate-form-dialog'
 import { Button } from '@/components/ui/button'
-import { Plus } from '@phosphor-icons/react'
+import { Plus } from '@phosphor-icons/react/dist/ssr'
 
 export default async function EstatesPage() {
   const supabase = await createClient()

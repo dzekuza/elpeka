@@ -11,13 +11,7 @@ async function requireAdmin() {
     throw new Error('Unauthorized')
   }
 
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('role')
-    .eq('id', user.id)
-    .single()
-
-  if (profile?.role !== 'admin') {
+  if (user.user_metadata?.role !== 'admin') {
     throw new Error('Forbidden')
   }
 

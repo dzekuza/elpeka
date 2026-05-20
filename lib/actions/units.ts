@@ -16,17 +16,31 @@ async function requireAdmin() {
     throw new Error('Unauthorized')
   }
 
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('role')
-    .eq('id', user.id)
-    .single()
-
-  if (profile?.role !== 'admin') {
+  if (user.user_metadata?.role !== 'admin') {
     throw new Error('Forbidden')
   }
 
   return { supabase, user }
+}
+
+export async function createUnit(data: {
+  estate_id: string
+  unit_number: string
+  floor?: number | null
+  area_sqm?: number | null
+}) {
+  const { supabase } = await requireAdmin()
+
+  const { error } = await supabase.from('units').insert({
+    estate_id: data.estate_id,
+    unit_number: data.unit_number,
+    floor: data.floor ?? null,
+    area_sqm: data.area_sqm ?? null,
+  })
+
+  if (error) throw new Error(error.message)
+
+  revalidatePath(`/admin/estates/${data.estate_id}`)
 }
 
 export async function updateUnitTechnicalData(
