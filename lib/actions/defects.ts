@@ -18,13 +18,7 @@ async function requireAdmin() {
     throw new Error('Unauthorized')
   }
 
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('role')
-    .eq('id', user.id)
-    .single()
-
-  if (profile?.role !== 'admin') {
+  if (user.user_metadata?.role !== 'admin') {
     throw new Error('Forbidden')
   }
 
@@ -42,13 +36,7 @@ async function requireOwner() {
     throw new Error('Unauthorized')
   }
 
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('role')
-    .eq('id', user.id)
-    .single()
-
-  if (profile?.role !== 'owner') {
+  if (user.user_metadata?.role !== 'owner') {
     throw new Error('Forbidden')
   }
 
@@ -237,5 +225,5 @@ export async function submitDefect(
     }
   }
 
-  revalidatePath('/portal/defects')
+  revalidatePath('/portal/defektai')
 }
