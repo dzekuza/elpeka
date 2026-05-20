@@ -1,0 +1,28 @@
+<h2>What is an "estate" vs a "property"?</h2>
+<p class="subtitle">This defines the core data model. Does one estate contain many individual units, or is each home a standalone property?</p>
+
+<div class="options">
+  <div class="option" data-choice="a" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>Estate → many units (apartments/houses)</h3>
+      <p>A single estate project (e.g. "Saulėtekio kvartalas") contains many individual units. Each unit has one owner. The company builds the estate; owners buy individual units. <br><br><strong>Data model:</strong> Estate → Units → Owner</p>
+    </div>
+  </div>
+  <div class="option" data-choice="b" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>Each property is standalone</h3>
+      <p>No parent "estate" concept. Every property (home, apartment) is its own entry in the system, and the company manages each one independently. One owner per property.</p>
+      <br><strong>Data model:</strong> Property → Owner</p>
+    </div>
+  </div>
+  <div class="option" data-choice="c" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>Estate → units, but one owner can own multiple units</h3>
+      <p>Same as A, but an owner (e.g. an investor) can be linked to several units across one or more estates. More flexible ownership model.</p>
+      <br><strong>Data model:</strong> Estate → Units ←→ Owners (many-to-many)</p>
+    </div>
+  </div>
+</div>

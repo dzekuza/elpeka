@@ -1,0 +1,41 @@
+<h2>Architecture approach for the app</h2>
+<p class="subtitle">The biggest decision: how to structure admin CMS vs owner portal in a single Next.js codebase.</p>
+
+<div class="options">
+  <div class="option" data-choice="a" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>Single app, route-based separation <span style="color:#b5935a;font-size:0.8em;">(Recommended)</span></h3>
+      <p>One Next.js 15 app. Admin lives at <code>/admin/...</code>, owner portal at <code>/portal/...</code>. Shared Supabase backend. Middleware handles role-based access — admins can't reach <code>/portal</code> and owners can't reach <code>/admin</code>.</p>
+      <br>
+      <div class="pros-cons">
+        <div class="pros"><h4>Pros</h4><ul><li>One codebase, one deployment</li><li>Shared auth, DB, storage config</li><li>Simple to reason about</li></ul></div>
+        <div class="cons"><h4>Cons</h4><ul><li>Must be careful with middleware routing</li><li>Admin bundle ships to same domain as portal</li></ul></div>
+      </div>
+    </div>
+  </div>
+  <div class="option" data-choice="b" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>Two separate Next.js apps</h3>
+      <p>Admin CMS deployed at <code>admin.elpekas.lt</code>, owner portal at <code>app.elpekas.lt</code>. Both connect to the same Supabase project. Separate repos or a monorepo with Turborepo.</p>
+      <br>
+      <div class="pros-cons">
+        <div class="pros"><h4>Pros</h4><ul><li>Complete isolation between apps</li><li>Different deploy cadences possible</li></ul></div>
+        <div class="cons"><h4>Cons</h4><ul><li>2× the config, 2× the deployments</li><li>Shared code needs a package or copy-paste</li><li>More overhead for a project this size</li></ul></div>
+      </div>
+    </div>
+  </div>
+  <div class="option" data-choice="c" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>Single app, subdomain routing via Next.js middleware</h3>
+      <p>One codebase, but middleware routes <code>admin.elpekas.lt</code> to admin pages and <code>app.elpekas.lt</code> (or <code>elpekas.lt</code>) to owner portal. Best of both — clean URLs, one deploy.</p>
+      <br>
+      <div class="pros-cons">
+        <div class="pros"><h4>Pros</h4><ul><li>Clean subdomains without two codebases</li><li>Professional URL separation</li></ul></div>
+        <div class="cons"><h4>Cons</h4><ul><li>Slightly more complex middleware</li><li>Needs wildcard domain on Vercel</li></ul></div>
+      </div>
+    </div>
+  </div>
+</div>

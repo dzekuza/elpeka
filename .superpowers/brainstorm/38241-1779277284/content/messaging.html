@@ -1,0 +1,26 @@
+<h2>How do owner requests / messages work?</h2>
+<p class="subtitle">This determines whether we need real-time messaging infrastructure or a simpler ticket system.</p>
+
+<div class="options">
+  <div class="option" data-choice="a" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>Simple ticket / request form</h3>
+      <p>Owner fills a form (subject, category, description). Company staff sees it in the CMS, marks it as resolved. Email notifications on both sides. No live chat — async only.</p>
+    </div>
+  </div>
+  <div class="option" data-choice="b" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>Threaded messages per unit</h3>
+      <p>Each unit has a message thread. Owner and staff exchange messages like an email thread — no live chat, but full conversation history. Email notification on new message.</p>
+    </div>
+  </div>
+  <div class="option" data-choice="c" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>Real-time chat (Supabase Realtime)</h3>
+      <p>Live messaging between owner and company. More complex to build, but feels modern. Still email notifications as fallback when offline.</p>
+    </div>
+  </div>
+</div>

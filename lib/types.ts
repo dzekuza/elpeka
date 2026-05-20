@@ -1,0 +1,103 @@
+export type UserRole = 'admin' | 'owner'
+
+export interface Estate {
+  id: string
+  name: string
+  address: string
+  description: string | null
+  created_at: string
+}
+
+export interface Unit {
+  id: string
+  estate_id: string
+  unit_number: string
+  floor: number | null
+  area_sqm: number | null
+  technical_data: TechnicalData | null
+  financial_data: FinancialData | null
+  created_at: string
+}
+
+export interface TechnicalData {
+  rooms_count?: number
+  total_area?: number
+  living_area?: number
+  heating_type?: string
+  building_materials?: string
+  construction_year?: number
+  floor_covering?: string
+}
+
+export interface FinancialData {
+  sale_price?: number
+  payment_type?: string
+  payment_schedule_notes?: string
+  notary_info?: string
+}
+
+export interface UnitOwner {
+  id: string
+  unit_id: string
+  user_id: string
+  invited_at: string
+  accepted_at: string | null
+}
+
+export interface Defect {
+  id: string
+  unit_id: string
+  submitted_by: string
+  title: string
+  description: string
+  status: DefectStatus
+  created_at: string
+}
+
+export type DefectStatus = 'pateikta' | 'sprendziama' | 'atlikta'
+
+export interface DefectAttachment {
+  id: string
+  defect_id: string
+  storage_path: string
+  uploaded_by: string
+  created_at: string
+}
+
+export interface DefectReply {
+  id: string
+  defect_id: string
+  author_id: string
+  body: string
+  created_at: string
+}
+
+export interface DefectReplyAttachment {
+  id: string
+  reply_id: string
+  storage_path: string
+  created_at: string
+}
+
+export interface Document {
+  id: string
+  unit_id: string
+  category: string
+  name: string
+  storage_path: string
+  uploaded_by: string
+  created_at: string
+}
+
+export interface DefectWithDetails extends Defect {
+  attachments: DefectAttachment[]
+  replies: (DefectReply & { attachments: DefectReplyAttachment[] })[]
+}
+
+export interface UnitWithOwner extends Unit {
+  owner: { email: string; full_name?: string } | null
+}
+
+export interface EstateWithUnitCount extends Estate {
+  unit_count: number
+}
