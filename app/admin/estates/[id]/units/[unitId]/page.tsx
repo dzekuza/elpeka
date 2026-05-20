@@ -1,9 +1,6 @@
 import { notFound } from 'next/navigation'
-import Link from 'next/link'
-import { CaretLeft } from '@phosphor-icons/react/dist/ssr'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
-import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { PageHeader } from '@/components/page-header'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
@@ -108,15 +105,7 @@ export default async function UnitDetailPage({
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between gap-4">
-        <div className="flex items-center gap-4">
-          <Button asChild variant="ghost" size="icon">
-            <Link href={`/admin/estates/${estateId}`}>
-              <CaretLeft className="size-4" />
-              <span className="sr-only">Grįžti</span>
-            </Link>
-          </Button>
-          <PageHeader title={`Butas ${unit.unit_number}`} description={estate?.name} />
-        </div>
+        <PageHeader title={`Butas ${unit.unit_number}`} description={estate?.name} />
 
         <div className="flex items-center gap-3">
           {ownerRow ? (

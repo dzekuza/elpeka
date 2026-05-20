@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import type { Contact, ContactDocument, ContactCategory } from '@/lib/types'
+import { validateDocumentUpload } from '@/lib/upload-validation'
 
 async function requireAdmin() {
   const supabase = await createClient()
@@ -91,6 +92,8 @@ export async function uploadContactDocument(
 
   const file = formData.get('file') as File | null
   if (!file) throw new Error('Trūksta failo')
+
+  validateDocumentUpload(file)
 
   const fileName = `${Date.now()}-${file.name}`
   const storagePath = `contacts/${contactId}/${fileName}`

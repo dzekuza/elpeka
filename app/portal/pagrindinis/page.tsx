@@ -3,7 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import { StepsAccordion, type PurchaseStep } from '@/components/portal/steps-accordion'
 import type { Document } from '@/lib/types'
 
-const PURCHASE_STEPS: Omit<PurchaseStep, 'document' | 'category'>[] = [
+const PURCHASE_STEPS: Omit<PurchaseStep, 'documents' | 'category'>[] = [
   {
     number: 1,
     title: 'Preliminari sutartis',
@@ -123,9 +123,11 @@ export default async function PagrindiniPage() {
     }
   }
 
-  const docsByCategory = (documents ?? []).reduce<Record<string, Document>>(
+  const docsByCategory = (documents ?? []).reduce<Record<string, Document[]>>(
     (acc, doc) => {
-      if (doc.category && !acc[doc.category]) acc[doc.category] = doc as Document
+      if (doc.category) {
+        acc[doc.category] = [...(acc[doc.category] ?? []), doc as Document]
+      }
       return acc
     },
     {}
@@ -134,7 +136,7 @@ export default async function PagrindiniPage() {
   const steps: PurchaseStep[] = PURCHASE_STEPS.map((step, i) => ({
     ...step,
     category: STEP_CATEGORIES[i],
-    document: docsByCategory[STEP_CATEGORIES[i]] ?? null,
+    documents: docsByCategory[STEP_CATEGORIES[i]] ?? [],
   }))
 
   const mainPhoto = photoUrls[0] ?? null
@@ -144,7 +146,7 @@ export default async function PagrindiniPage() {
   return (
     <div className="space-y-8">
       {/* Hero — estate photos */}
-      <div className="flex gap-4 h-72">
+      <div className="flex gap-4 h-56 sm:h-72">
         {/* Main photo */}
         <div className="relative flex-1 rounded-2xl overflow-hidden min-w-0">
           {mainPhoto ? (
@@ -154,16 +156,16 @@ export default async function PagrindiniPage() {
           )}
           <div className="absolute inset-0 bg-gradient-to-t from-black/85 to-transparent rounded-2xl" />
           <div className="absolute bottom-0 left-0 right-0 p-6 text-white space-y-1">
-            <h1 className="text-4xl font-semibold tracking-tight leading-tight">
+            <h1 className="text-2xl sm:text-4xl font-semibold tracking-tight leading-tight">
               {estate?.name ?? unit?.unit_number ?? '—'}
             </h1>
             <p className="text-sm opacity-80">{estate?.address ?? '—'}</p>
           </div>
         </div>
 
-        {/* 2×2 photo grid */}
+        {/* 2×2 photo grid — hidden on mobile */}
         {(gridPhotos.length > 0 || photoUrls.length === 0) && (
-          <div className="grid grid-cols-2 grid-rows-2 gap-4 w-[340px] shrink-0">
+          <div className="hidden sm:grid grid-cols-2 grid-rows-2 gap-4 w-[340px] shrink-0">
             {Array.from({ length: 4 }).map((_, i) => {
               const url = gridPhotos[i] ?? null
               const isLast = i === 3

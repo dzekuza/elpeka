@@ -24,10 +24,20 @@ import { uploadUnitDocument, deleteDocument } from '@/lib/actions/units'
 import type { Document } from '@/lib/types'
 
 const CATEGORY_OPTIONS = [
-  { value: 'Sutartis', label: 'Sutartis' },
-  { value: 'Techninė dokumentacija', label: 'Techninė dokumentacija' },
-  { value: 'Kita', label: 'Kita' },
+  { value: 'preliminari_sutartis',  label: 'Preliminari sutartis' },
+  { value: 'mokejimai',             label: 'Mokėjimai' },
+  { value: 'banko_sutartis',        label: 'Banko sutartis ir turto vertinimas' },
+  { value: 'kadastro_byla',         label: 'Kadastrinių matavimų byla' },
+  { value: 'notarine_sutartis',     label: 'Notarinė pirkimo-pardavimo sutartis' },
+  { value: 'registru_israsas',      label: 'Registrų centro išrašas' },
+  { value: 'pakvitavimas',          label: 'Pakvitavimas' },
+  { value: 'papildomi_dokumentai',  label: 'Papildomi dokumentai' },
+  { value: 'kita',                  label: 'Kita' },
 ]
+
+const CATEGORY_LABEL: Record<string, string> = Object.fromEntries(
+  CATEGORY_OPTIONS.map((o) => [o.value, o.label])
+)
 
 function formatDate(dateString: string): string {
   return new Date(dateString).toLocaleDateString('lt-LT', {
@@ -44,7 +54,7 @@ interface DocumentsTabProps {
 
 export function DocumentsTab({ unitId, documents }: DocumentsTabProps) {
   const fileInputRef = useRef<HTMLInputElement>(null)
-  const [selectedCategory, setSelectedCategory] = useState<string>('Kita')
+  const [selectedCategory, setSelectedCategory] = useState<string>('preliminari_sutartis')
   const [isPending, startTransition] = useTransition()
 
   function handleUploadClick() {
@@ -135,7 +145,7 @@ export function DocumentsTab({ unitId, documents }: DocumentsTabProps) {
             documents.map((doc) => (
               <TableRow key={doc.id}>
                 <TableCell className="font-medium">{doc.name}</TableCell>
-                <TableCell>{doc.category}</TableCell>
+                <TableCell>{CATEGORY_LABEL[doc.category] ?? doc.category}</TableCell>
                 <TableCell>{formatDate(doc.created_at)}</TableCell>
                 <TableCell className="text-right">
                   <div className="flex items-center justify-end gap-2">

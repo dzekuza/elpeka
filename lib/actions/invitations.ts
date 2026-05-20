@@ -6,40 +6,26 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { Resend } from 'resend'
 import { InviteEmail } from '@/components/email/invite-email'
 
+export interface OwnerEntry {
+  email: string
+  firstName: string
+  lastName: string
+  phone: string
+}
+
 export async function inviteOwner(
   unitId: string,
-  email: string
-): Promise<{ error?: string }> {
+  owners: OwnerEntry[]
+): Promise<{ error?: string; invited: number }> {
   try {
     const supabase = await createClient()
-    const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser()
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
 
-    if (authError || !user) {
-      return { error: 'Neprisijungęs' }
-    }
-
-    if (user.user_metadata?.role !== 'admin') {
-      return { error: 'Nėra teisių' }
-    }
+    if (authError || !user) return { error: 'Neprisijungęs', invited: 0 }
+    if (user.user_metadata?.role !== 'admin') return { error: 'Nėra teisių', invited: 0 }
 
     const adminClient = createAdminClient()
 
-    // Check if unit already has an accepted owner
-    const { data: existingOwner } = await supabase
-      .from('unit_owners')
-      .select('id, accepted_at')
-      .eq('unit_id', unitId)
-      .not('accepted_at', 'is', null)
-      .maybeSingle()
-
-    if (existingOwner) {
-      return { error: 'Šis butas jau turi savininką' }
-    }
-
-    // Fetch unit + estate info for the email
     const { data: unit } = await supabase
       .from('units')
       .select('unit_number, estates(name)')
@@ -53,52 +39,46 @@ export async function inviteOwner(
         ? (estatesRaw as { name: string }).name
         : 'Nežinomas objektas'
 
-    // Invite via Supabase Auth
-    const { data: inviteData, error: inviteError } =
-      await adminClient.auth.admin.inviteUserByEmail(email, {
-        data: { role: 'owner', unit_id: unitId },
-        redirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/auth/callback?next=/invite`,
-      })
+    const resend = new Resend(process.env.RESEND_API_KEY)
+    const inviteUrl = `${process.env.NEXT_PUBLIC_APP_URL}/invite`
+    let invited = 0
 
-    if (inviteError || !inviteData.user) {
-      return { error: inviteError?.message ?? 'Klaida kviečiant vartotoją' }
-    }
+    for (const owner of owners) {
+      const { data: inviteData, error: inviteError } =
+        await adminClient.auth.admin.inviteUserByEmail(owner.email, {
+          data: { role: 'owner', unit_id: unitId },
+          redirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/auth/callback?next=/invite`,
+        })
 
-    const invitedUserId = inviteData.user.id
+      if (inviteError || !inviteData.user) continue
 
-    // Upsert unit_owners record
-    const { error: upsertError } = await adminClient
-      .from('unit_owners')
-      .upsert(
+      await adminClient.from('unit_owners').upsert(
         {
           unit_id: unitId,
-          user_id: invitedUserId,
+          user_id: inviteData.user.id,
+          first_name: owner.firstName || null,
+          last_name: owner.lastName || null,
+          phone: owner.phone || null,
           invited_at: new Date().toISOString(),
           accepted_at: null,
         },
         { onConflict: 'unit_id,user_id' }
       )
 
-    if (upsertError) {
-      return { error: upsertError.message }
+      await resend.emails.send({
+        from: process.env.RESEND_FROM_EMAIL!,
+        to: owner.email,
+        subject: `Kvietimas į ELPEKAS portalą — ${estateName}`,
+        react: InviteEmail({ unitNumber, estateName, inviteUrl }),
+      })
+
+      invited++
     }
 
-    // Send branded invite email via Resend
-    const resend = new Resend(process.env.RESEND_API_KEY)
-    const inviteUrl = `${process.env.NEXT_PUBLIC_APP_URL}/invite`
-
-    await resend.emails.send({
-      from: process.env.RESEND_FROM_EMAIL!,
-      to: email,
-      subject: `Kvietimas į ELPEKAS portalą — ${estateName}`,
-      react: InviteEmail({ unitNumber, estateName, inviteUrl }),
-    })
-
     revalidatePath('/admin/estates')
-
-    return {}
+    return { invited }
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Nežinoma klaida'
-    return { error: message }
+    return { error: message, invited: 0 }
   }
 }

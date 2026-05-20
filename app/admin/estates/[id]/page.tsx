@@ -1,23 +1,11 @@
 import { notFound } from 'next/navigation'
-import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { PageHeader } from '@/components/page-header'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { CaretLeft, PencilSimpleLine } from '@phosphor-icons/react/dist/ssr'
-import { InviteOwnerDialog } from '@/components/admin/invite-owner-dialog'
-import { UnitFormDialog } from '@/components/admin/unit-form-dialog'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { EstatePhotosSection } from '@/components/admin/estate-photos-section'
 import { EstateContactsSection } from '@/components/admin/estate-contacts-section'
+import { UnitsDataTable } from '@/components/admin/units-data-table'
 import type { Contact } from '@/lib/types'
 
 interface UnitRow {
@@ -33,14 +21,6 @@ interface UnitRow {
   }>
 }
 
-function formatDate(dateString: string | null): string {
-  if (!dateString) return '—'
-  return new Date(dateString).toLocaleDateString('lt-LT', {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-  })
-}
 
 export default async function EstateDetailPage({
   params,
@@ -150,98 +130,28 @@ export default async function EstateDetailPage({
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-4">
-        <Button asChild variant="ghost" size="icon">
-          <Link href="/admin/estates">
-            <CaretLeft className="size-4" />
-            <span className="sr-only">Grįžti</span>
-          </Link>
-        </Button>
-        <PageHeader title={estate.name} description={estate.address} />
-      </div>
+      <PageHeader title={estate.name} description={estate.address} />
 
-      <div>
-        <h2 className="text-lg font-medium mb-4">Nuotraukos</h2>
-        <EstatePhotosSection estateId={id} photos={estatePhotos} />
-      </div>
-
-      <div>
-        <h2 className="text-lg font-medium mb-4">Kontaktai</h2>
-        <EstateContactsSection
-          estateId={id}
-          assignedContacts={assignedContacts}
-          allContacts={allContacts}
-        />
-      </div>
-
-      <div>
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-medium">Butai</h2>
-          <UnitFormDialog estateId={id} />
-        </div>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Buto nr.</TableHead>
-              <TableHead>Aukštas</TableHead>
-              <TableHead>Plotas (m²)</TableHead>
-              <TableHead>Savininkas</TableHead>
-              <TableHead>Prisijungė</TableHead>
-              <TableHead className="text-right">Veiksmai</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {unitsWithOwners.length === 0 ? (
-              <TableRow>
-                <TableCell
-                  colSpan={6}
-                  className="text-center text-muted-foreground py-8"
-                >
-                  Nėra butų
-                </TableCell>
-              </TableRow>
-            ) : (
-              unitsWithOwners.map((unit) => {
-                const owner = unit.unit_owners[0] ?? null
-                return (
-                  <TableRow key={unit.id}>
-                    <TableCell className="font-medium">
-                      {unit.unit_number}
-                    </TableCell>
-                    <TableCell>{unit.floor ?? '—'}</TableCell>
-                    <TableCell>{unit.area_sqm ?? '—'}</TableCell>
-                    <TableCell>
-                      {owner?.email ? (
-                        owner.email
-                      ) : (
-                        <Badge variant="secondary">Savininkas neprikeltas</Badge>
-                      )}
-                    </TableCell>
-                    <TableCell>{formatDate(owner?.accepted_at ?? null)}</TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex items-center justify-end gap-2">
-                        {!owner?.accepted_at && (
-                          <InviteOwnerDialog
-                            unitId={unit.id}
-                            unitNumber={unit.unit_number}
-                            estateId={id}
-                          />
-                        )}
-                        <Button asChild variant="ghost" size="sm">
-                          <Link href={`/admin/estates/${id}/units/${unit.id}`}>
-                            <PencilSimpleLine className="size-4 mr-1" />
-                            Redaguoti
-                          </Link>
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                )
-              })
-            )}
-          </TableBody>
-        </Table>
-      </div>
+      <Tabs defaultValue="units">
+        <TabsList>
+          <TabsTrigger value="units">Butai</TabsTrigger>
+          <TabsTrigger value="photos">Nuotraukos</TabsTrigger>
+          <TabsTrigger value="contacts">Kontaktai</TabsTrigger>
+        </TabsList>
+        <TabsContent value="units">
+          <UnitsDataTable estateId={id} units={unitsWithOwners} />
+        </TabsContent>
+        <TabsContent value="photos">
+          <EstatePhotosSection estateId={id} photos={estatePhotos} />
+        </TabsContent>
+        <TabsContent value="contacts">
+          <EstateContactsSection
+            estateId={id}
+            assignedContacts={assignedContacts}
+            allContacts={allContacts}
+          />
+        </TabsContent>
+      </Tabs>
     </div>
   )
 }

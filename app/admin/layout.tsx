@@ -1,7 +1,7 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import { AdminSidebar } from '@/components/admin/admin-sidebar'
-import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
+import { AdminSidebarCompact } from '@/components/admin/admin-sidebar-compact'
+import { AdminBottomNav } from '@/components/admin/admin-bottom-nav'
 
 export default async function AdminLayout({
   children,
@@ -20,14 +20,12 @@ export default async function AdminLayout({
   const userEmail = user.email ?? ''
 
   return (
-    <SidebarProvider>
-      <AdminSidebar userEmail={userEmail} />
-      <SidebarInset>
-        <header className="flex h-14 items-center gap-2 border-b px-4">
-          <SidebarTrigger />
-        </header>
-        <div className="flex-1 px-10 pt-7 pb-10">{children}</div>
-      </SidebarInset>
-    </SidebarProvider>
+    <div className="flex h-screen overflow-hidden">
+      <AdminSidebarCompact userEmail={userEmail} />
+      <main className="flex-1 overflow-y-auto">
+        <div className="px-4 pt-6 pb-24 md:px-10 md:pt-7 md:pb-10">{children}</div>
+      </main>
+      <AdminBottomNav />
+    </div>
   )
 }

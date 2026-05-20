@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import type { DefectStatus } from '@/lib/types'
+import { validateImageUpload } from '@/lib/upload-validation'
 import { Resend } from 'resend'
 import { DefectStatusEmail } from '@/components/email/defect-status-email'
 
@@ -124,6 +125,7 @@ export async function addDefectReply(
   if (photoFormData) {
     const file = photoFormData.get('file') as File | null
     if (file) {
+      validateImageUpload(file)
       const adminClient = createAdminClient()
       const fileName = `${Date.now()}-${file.name}`
       const storagePath = `defects/${defectId}/replies/${fileName}`
@@ -194,6 +196,7 @@ export async function submitDefect(
   if (photoFormData) {
     const file = photoFormData.get('file') as File | null
     if (file) {
+      validateImageUpload(file)
       const adminClient = createAdminClient()
       const fileName = `${Date.now()}-${file.name}`
       const storagePath = `defects/${defect.id}/${fileName}`

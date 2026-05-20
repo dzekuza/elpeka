@@ -1,72 +1,71 @@
 import Link from 'next/link'
 import {
-  Buildings,
+  BuildingOffice,
   ListChecks,
   Camera,
   FileText,
   Headset,
 } from '@phosphor-icons/react/dist/ssr'
-import { Button } from '@/components/ui/button'
 
 const features = [
-  { icon: Buildings, label: 'Peržiūrėkite savo būsto informaciją' },
-  { icon: ListChecks, label: 'Praneškite apie defektus ir sekite jų sprendimo eigą' },
-  { icon: Camera, label: 'Peržiūrėkite objekto nuotraukas' },
-  { icon: FileText, label: 'Valdykite su paslaugų sutartimis susijusią informaciją' },
-  { icon: Headset, label: 'Susisiekite su administracija ar rangovais' },
+  { icon: BuildingOffice, label: 'Peržiūrėkite savo būsto informaciją' },
+  { icon: ListChecks,     label: 'Praneškite apie defektus ir sekite jų sprendimo eigą' },
+  { icon: Camera,         label: 'Peržiūrėkite objekto nuotraukas' },
+  { icon: FileText,       label: 'Valdykite su paslaugų sutartimis susijusią informaciją' },
+  { icon: Headset,        label: 'Susisiekite su administracija ar rangovais' },
 ]
 
 export default function OnboardingPage() {
   return (
-    <div className="flex min-h-screen bg-background">
-      {/* Left — content */}
-      <div className="relative flex flex-1 flex-col px-20 py-8">
-        {/* Logo */}
-        <div className="mb-auto">
-          <span className="text-xl font-bold tracking-wide text-foreground">ELPEKAS</span>
-        </div>
+    <div className="relative flex min-h-screen bg-[#f2f1f0]">
+      {/* Logo — top left */}
+      <div className="absolute left-8 top-8 z-10">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/logotype-dark.svg" alt="ELPEKAS" width={102} height={41} />
+      </div>
 
-        {/* Centered content */}
-        <div className="flex flex-1 flex-col justify-center gap-8 py-16">
-          <h1 className="text-3xl font-semibold leading-tight tracking-tight text-foreground">
-            Sveiki atvykę į{' '}
-            <span className="font-bold">Elpekas</span>{' '}
-            kliento portalą
+      {/* Left: content */}
+      <div className="flex w-1/2 items-center px-20">
+        <div className="flex flex-col gap-8 max-w-lg">
+          <h1 className="text-[28px] font-medium leading-10 tracking-[-0.02em] text-foreground">
+            Sveiki atvykę į <strong className="font-bold">Elpekas</strong> kliento portalą
           </h1>
 
-          <div className="flex flex-col gap-5 text-foreground/80">
-            <p className="text-base leading-relaxed">
-              Prieigą prie šio portalo gavote įsigiję nekilnojamąjį turtą viename iš
-              „Elpekas" projektų. Čia galite valdyti su jūsų būstu / patalpomis susijusią
-              informaciją ir gauti pagalbą.
+          <div className="flex flex-col gap-[18px] opacity-80">
+            <p className="text-base leading-6 text-foreground">
+              Prieigą prie šio portalo gavote įsigiję nekilnojamąjį turtą viename iš „Elpekas"
+              projektų. Čia galite valdyti su jūsų būstu / patalpomis susijusią informaciją ir
+              gauti pagalbą.
             </p>
 
             <ul className="flex flex-col gap-2">
               {features.map(({ icon: Icon, label }) => (
-                <li key={label} className="flex items-center gap-3 text-base">
-                  <Icon className="size-5 shrink-0 text-primary" />
-                  <span>{label}</span>
+                <li key={label} className="flex items-center gap-3">
+                  <Icon className="size-6 shrink-0 text-foreground" weight="regular" />
+                  <span className="text-base leading-7 text-foreground">{label}</span>
                 </li>
               ))}
             </ul>
           </div>
 
-          <Button asChild className="w-fit">
-            <Link href="/portal/pagrindinis">Pradėti</Link>
-          </Button>
+          <Link
+            href="/portal/pagrindinis"
+            className="inline-flex items-center justify-center self-start rounded-lg bg-primary px-4 py-3 text-base font-medium text-primary-foreground transition-opacity hover:opacity-90"
+          >
+            Pradėti
+          </Link>
         </div>
       </div>
 
-      {/* Right — photo panel */}
-      <div className="hidden p-4 lg:flex lg:w-[49%]">
-        <div className="w-full overflow-hidden rounded-3xl bg-muted">
-          {/*
-            Replace with an actual property photo stored in Supabase Storage.
-            Dimensions: roughly 680×748px.
-          */}
-          <div className="flex h-full items-center justify-center text-muted-foreground">
-            <Buildings className="size-24 opacity-20" />
-          </div>
+      {/* Right: hero image */}
+      <div className="flex w-1/2 items-center p-4">
+        <div className="relative h-[780px] w-full overflow-hidden rounded-3xl">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/onboarding-hero.png"
+            alt="ELPEKAS portalo vizualas"
+            className="absolute inset-0 h-full w-full object-cover"
+          />
         </div>
       </div>
     </div>

@@ -1,7 +1,7 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { PortalSidebar } from '@/components/portal/portal-sidebar'
-import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
+import { PortalBottomNav } from '@/components/portal/portal-bottom-nav'
 
 export default async function PortalLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient()
@@ -29,14 +29,12 @@ export default async function PortalLayout({ children }: { children: React.React
   }
 
   return (
-    <SidebarProvider>
+    <div className="flex h-screen overflow-hidden">
       <PortalSidebar userEmail={user.email ?? ''} activeDefectCount={activeDefectCount} />
-      <SidebarInset>
-        <header className="flex h-14 items-center gap-2 border-b px-4">
-          <SidebarTrigger />
-        </header>
-        <div className="flex-1 px-10 pt-7 pb-10">{children}</div>
-      </SidebarInset>
-    </SidebarProvider>
+      <main className="flex-1 overflow-y-auto">
+        <div className="px-4 pt-6 pb-24 md:px-10 md:pt-7 md:pb-10">{children}</div>
+      </main>
+      <PortalBottomNav activeDefectCount={activeDefectCount} />
+    </div>
   )
 }

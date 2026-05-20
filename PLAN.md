@@ -145,7 +145,7 @@ NEXT_PUBLIC_APP_URL
 ## Tasks
 
 ### Task 1 — Project Scaffold + Design System
-**Status:** `[ ]`
+**Status:** `[x]`
 
 Scaffold the Next.js 15 project with full ELPEKAS design system:
 
@@ -170,7 +170,7 @@ Scaffold the Next.js 15 project with full ELPEKAS design system:
 ---
 
 ### Task 2 — Supabase Client Helpers + Migrations
-**Status:** `[ ]`
+**Status:** `[x]`
 **Depends on:** Task 1
 
 1. Create `lib/supabase/client.ts` — `createBrowserClient` from `@supabase/ssr`
@@ -198,7 +198,7 @@ Scaffold the Next.js 15 project with full ELPEKAS design system:
 ---
 
 ### Task 3 — Auth + Middleware
-**Status:** `[ ]`
+**Status:** `[x]`
 **Depends on:** Task 2
 
 1. Create `middleware.ts` at project root:
@@ -224,7 +224,7 @@ Scaffold the Next.js 15 project with full ELPEKAS design system:
 ---
 
 ### Task 4 — Admin Layout + Estates Management
-**Status:** `[ ]`
+**Status:** `[x]`
 **Depends on:** Task 3
 
 **Admin sidebar** (matches Figma dark navy design):
@@ -249,7 +249,7 @@ Scaffold the Next.js 15 project with full ELPEKAS design system:
 ---
 
 ### Task 5 — Admin Unit Editor
-**Status:** `[ ]`
+**Status:** `[x]`
 **Depends on:** Task 4
 
 1. Create `app/admin/estates/[id]/units/[unitId]/page.tsx` — unit detail page with shadcn `Tabs`:
@@ -274,7 +274,7 @@ Scaffold the Next.js 15 project with full ELPEKAS design system:
 ---
 
 ### Task 6 — Admin Defects Management
-**Status:** `[ ]`
+**Status:** `[x]`
 **Depends on:** Task 5
 
 1. Create `components/admin/defect-table.tsx` — shadcn `Table` with filters (estate, status). Columns: ticket number, title, unit, owner, status badge, submitted date, actions.
@@ -301,7 +301,7 @@ Scaffold the Next.js 15 project with full ELPEKAS design system:
 ---
 
 ### Task 7 — Owner Portal Layout + Static Pages
-**Status:** `[ ]`
+**Status:** `[x]`
 **Depends on:** Task 3
 
 **Portal sidebar** (matches Figma exactly — dark navy, gold accents, badge counts):
@@ -325,7 +325,7 @@ Scaffold the Next.js 15 project with full ELPEKAS design system:
 ---
 
 ### Task 8 — Owner Defektai Feature
-**Status:** `[ ]`
+**Status:** `[x]`
 **Depends on:** Task 6 + Task 7
 
 This is the core owner feature. Matches Figma screens exactly.
@@ -366,7 +366,7 @@ This is the core owner feature. Matches Figma screens exactly.
 ---
 
 ### Task 9 — Owner Invite Flow + Email Templates
-**Status:** `[ ]`
+**Status:** `[x]`
 **Depends on:** Task 6
 
 1. Create `components/admin/invite-owner-dialog.tsx` — shadcn `Dialog` triggered from unit row. Form: email input, confirm unit assignment display. Submit calls invite Server Action.
@@ -391,7 +391,7 @@ This is the core owner feature. Matches Figma screens exactly.
 ---
 
 ### Task 10 — Final Polish + Deployment Config
-**Status:** `[ ]`
+**Status:** `[x]`
 **Depends on:** All previous tasks
 
 1. Create `vercel.json` or `vercel.ts` with: build command, framework: nextjs
@@ -415,11 +415,75 @@ This is the core owner feature. Matches Figma screens exactly.
 
 ---
 
+---
+
+## Post-Plan Features (built 2026-05-20)
+
+These features were added beyond the original 10-task scope.
+
+### Contacts Library (`/admin/contacts`)
+- `contacts` + `contact_documents` tables (migration 005)
+- Admin can create reusable contacts (name, phone, email, category, file attachments)
+- Contacts can be assigned to estates and are visible to portal owners at `/portal/kontaktai`
+- Components: `contact-form-dialog.tsx`, `contact-row-actions.tsx`, `contact-documents-section.tsx`, `estate-contacts-section.tsx`
+- Action file: `lib/actions/contacts.ts`
+
+### Estate Cover Photos
+- `cover_image_url` column on estates (migration 006)
+- Admin can upload cover photo per estate from estate detail page
+- Component: `components/admin/estate-photos-section.tsx`
+
+### Unit Services / Service Tracking
+- `unit_services` table (migration 007) — categories: electrical, water, heating, waste; UNIQUE per unit+category
+- Admin manages services per unit via Services tab in the unit editor (`unit-editor/services-tab.tsx`)
+- Portal owners see live service status at `/portal/sutartys` (replaced static documents view)
+- Portal displays `ServiceCard` per service with status toggle
+- Actions: `lib/actions/services.ts` — `upsertUnitService`, `markServiceCompleted`
+
+### Multi-Owner Support
+- Removed single-owner UNIQUE(unit_id) constraint (migration 008)
+- Added `first_name`, `last_name`, `phone` columns to `unit_owners`
+- `inviteOwner` action now accepts an array of owners and creates/invites each
+- Component: `components/admin/invite-owner-dialog.tsx` updated for multi-owner batch form
+
+### Portal Account Settings (`/portal/nustatymai`)
+- Owner can update display name and change password
+- Component: `components/portal/account-settings-form.tsx`
+
+### Forgot Password (`/forgot-password`)
+- Password reset flow via Supabase magic link
+- Component: `app/(auth)/forgot-password/forgot-password-form.tsx`
+
+### Mobile Bottom Navigation
+- Fixed bottom nav bars for both surfaces on mobile screens
+- `components/admin/admin-bottom-nav.tsx`
+- `components/portal/portal-bottom-nav.tsx`
+
+### Purchase Steps Accordion
+- Portal home (`/portal/pagrindinis`) shows owner's purchase progress as a step-by-step accordion
+- Each step has document upload slots; steps are drawn from `STEP_CATEGORIES` mapping
+- Component: `components/portal/steps-accordion.tsx`
+
+### Responsive Design Pass
+- Mobile-first typography on `PageHeader`, `ServiceCard`, `PortalContactCard`
+- `TabsList` updated for horizontal scroll on mobile (carousel style)
+- `StepsAccordion` responsive text sizing
+
+---
+
 ## Progress Log
 
-| Date | Task | Status | Agent | Notes |
-|------|------|--------|-------|-------|
-| 2026-05-20 | — | Starting | — | Plan created |
+| Date | Task | Status | Notes |
+|------|------|--------|-------|
+| 2026-05-20 | Tasks 1–10 | ✅ Done | All original plan tasks complete, build passes |
+| 2026-05-20 | Contacts Library | ✅ Done | Admin contacts + estate assignment + portal view |
+| 2026-05-20 | Estate Cover Photos | ✅ Done | Per-estate cover image upload |
+| 2026-05-20 | Unit Services | ✅ Done | Service tracking in admin + portal sutartys page |
+| 2026-05-20 | Multi-Owner | ✅ Done | migration 008, batch invite, contact fields |
+| 2026-05-20 | Account Settings | ✅ Done | /portal/nustatymai |
+| 2026-05-20 | Forgot Password | ✅ Done | /forgot-password |
+| 2026-05-20 | Mobile Nav | ✅ Done | Bottom navs for admin + portal |
+| 2026-05-20 | Responsive Pass | ✅ Done | Mobile UI fixes across portal |
 
 ---
 

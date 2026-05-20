@@ -42,11 +42,11 @@ export function ServiceCard({ service }: ServiceCardProps) {
     <div className="flex flex-col overflow-hidden rounded-[24px] bg-white">
       <button
         onClick={() => setOpen((v) => !v)}
-        className={`flex w-full cursor-pointer items-center justify-between p-6 text-left${open ? ' border-b border-foreground/15' : ''}`}
+        className={`flex w-full cursor-pointer items-center justify-between p-4 sm:p-6 text-left${open ? ' border-b border-foreground/15' : ''}`}
       >
         <div className="flex items-center gap-3">
-          <def.Icon className="size-6 shrink-0 text-foreground" />
-          <span className="text-2xl font-medium leading-8 tracking-[-0.48px] text-foreground">
+          <def.Icon className="size-5 sm:size-6 shrink-0 text-foreground" />
+          <span className="text-base sm:text-2xl font-medium sm:leading-8 sm:tracking-[-0.48px] text-foreground">
             {def.label}
           </span>
         </div>

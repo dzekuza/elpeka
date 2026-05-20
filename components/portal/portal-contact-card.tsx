@@ -40,15 +40,15 @@ export function PortalContactCard({ contact, documentUrls }: PortalContactCardPr
   const Icon = CATEGORY_ICONS[contact.category] ?? Buildings
 
   return (
-    <div className="flex flex-col gap-8 overflow-hidden rounded-[24px] bg-white p-6">
+    <div className="flex flex-col gap-4 sm:gap-8 overflow-hidden rounded-[24px] bg-white p-4 sm:p-6">
       <button
         onClick={() => setOpen((v) => !v)}
-        className="flex w-full cursor-pointer items-center gap-10 border-b border-foreground/15 pb-6 text-left"
+        className={`flex w-full cursor-pointer items-center gap-4 sm:gap-10 text-left${open ? ' border-b border-foreground/15 pb-4 sm:pb-6' : ''}`}
       >
         <div className="flex flex-1 flex-col gap-2">
           <div className="flex items-center gap-3">
-            <Icon className="size-6 shrink-0 text-foreground" />
-            <span className="text-2xl font-medium leading-8 tracking-[-0.48px] text-foreground">
+            <Icon className="size-5 sm:size-6 shrink-0 text-foreground" />
+            <span className="text-base sm:text-2xl font-medium sm:leading-8 sm:tracking-[-0.48px] text-foreground">
               {contact.title}
             </span>
           </div>

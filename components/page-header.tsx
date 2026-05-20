@@ -6,7 +6,7 @@ interface PageHeaderProps {
 export function PageHeader({ title, description }: PageHeaderProps) {
   return (
     <div className="flex flex-col gap-2">
-      <h1 className="text-[40px] font-medium leading-[48px] tracking-[-1.6px] text-foreground">
+      <h1 className="text-[28px] leading-[36px] sm:text-[40px] font-medium sm:leading-[48px] tracking-[-1.6px] text-foreground">
         {title}
       </h1>
       {description && (
