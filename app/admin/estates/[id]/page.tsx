@@ -14,6 +14,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { ChevronLeft, Pencil } from 'lucide-react'
 import { InviteOwnerDialog } from '@/components/admin/invite-owner-dialog'
+import { UnitFormDialog } from '@/components/admin/unit-form-dialog'
 
 interface UnitRow {
   id: string
@@ -120,7 +121,10 @@ export default async function EstateDetailPage({
       </div>
 
       <div>
-        <h2 className="text-lg font-medium mb-4">Butai</h2>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-lg font-medium">Butai</h2>
+          <UnitFormDialog estateId={id} />
+        </div>
         <Table>
           <TableHeader>
             <TableRow>

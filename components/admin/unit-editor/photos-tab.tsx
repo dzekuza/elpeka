@@ -4,7 +4,7 @@ import { useCallback, useState, useTransition } from 'react'
 import { useDropzone } from 'react-dropzone'
 import Image from 'next/image'
 import { toast } from 'sonner'
-import { ImagePlus, Trash2, Upload } from 'lucide-react'
+import { Camera, Trash2, Upload, ImagePlus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { uploadUnitPhoto, deleteDocument } from '@/lib/actions/units'
 

@@ -62,7 +62,7 @@ export function InviteForm() {
         .is('accepted_at', null)
     }
 
-    router.push('/portal/pagrindinis')
+    router.push('/onboarding')
   }
 
   if (!ready) {

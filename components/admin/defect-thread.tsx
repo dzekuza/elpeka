@@ -4,7 +4,7 @@ import { useState, useCallback, useTransition } from 'react'
 import Image from 'next/image'
 import { useDropzone } from 'react-dropzone'
 import { toast } from 'sonner'
-import { Check, ImagePlus, X } from 'lucide-react'
+import { Check, Camera, X } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -327,7 +327,7 @@ export function DefectThread({ defect, replies }: DefectThreadProps) {
             >
               <input {...getInputProps()} />
               <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
-                <ImagePlus className="size-4" />
+                <Camera className="size-4" />
                 {isDragActive
                   ? 'Paleiskite čia...'
                   : 'Pridėti nuotrauką (tempkite arba spauskite)'}
