@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { PageHeader } from '@/components/page-header'
 
 export default async function NuotraukosPage() {
   const supabase = await createClient()
@@ -39,7 +40,7 @@ export default async function NuotraukosPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-semibold">Objekto nuotraukos</h1>
+      <PageHeader title="Objekto nuotraukos" />
       {photoUrls.length === 0 ? (
         <p className="text-muted-foreground text-sm py-10 text-center">
           Nuotraukų kol kas nėra.

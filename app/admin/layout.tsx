@@ -26,7 +26,7 @@ export default async function AdminLayout({
         <header className="flex h-14 items-center gap-2 border-b px-4">
           <SidebarTrigger />
         </header>
-        <div className="flex-1 p-6">{children}</div>
+        <div className="flex-1 px-10 pt-7 pb-10">{children}</div>
       </SidebarInset>
     </SidebarProvider>
   )

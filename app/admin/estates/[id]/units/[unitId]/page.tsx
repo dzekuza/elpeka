@@ -4,11 +4,14 @@ import { CaretLeft } from '@phosphor-icons/react/dist/ssr'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
+import { PageHeader } from '@/components/page-header'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { TechnicalForm } from '@/components/admin/unit-editor/technical-form'
 import { FinancialForm } from '@/components/admin/unit-editor/financial-form'
 import { DocumentsTab } from '@/components/admin/unit-editor/documents-tab'
 import { PhotosTab } from '@/components/admin/unit-editor/photos-tab'
+import { InviteOwnerDialog } from '@/components/admin/invite-owner-dialog'
 import type { Unit, Document } from '@/lib/types'
 
 interface Photo {
@@ -56,17 +59,31 @@ export default async function UnitDetailPage({
 
   const photos: Photo[] = await Promise.all(
     photoRows.map(async (row) => {
-      const { data } = adminClient.storage
+      const { data } = await adminClient.storage
         .from('unit-files')
-        .getPublicUrl(row.storage_path)
+        .createSignedUrl(row.storage_path, 60 * 60)
       return {
         id: row.id,
         storage_path: row.storage_path,
-        url: data.publicUrl,
+        url: data?.signedUrl ?? '',
         name: row.name,
       }
     })
   )
+
+  const { data: ownerRow } = await supabase
+    .from('unit_owners')
+    .select('user_id, accepted_at')
+    .eq('unit_id', unitId)
+    .order('invited_at', { ascending: false })
+    .limit(1)
+    .maybeSingle()
+
+  let ownerEmail: string | null = null
+  if (ownerRow) {
+    const { data: ownerUser } = await adminClient.auth.admin.getUserById(ownerRow.user_id)
+    ownerEmail = ownerUser?.user?.email ?? null
+  }
 
   const typedUnit: Unit = {
     id: unit.id,
@@ -81,19 +98,32 @@ export default async function UnitDetailPage({
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-4">
-        <Button asChild variant="ghost" size="icon">
-          <Link href={`/admin/estates/${estateId}`}>
-            <CaretLeft className="size-4" />
-            <span className="sr-only">Grįžti</span>
-          </Link>
-        </Button>
-        <div>
-          <h1 className="text-2xl font-semibold">
-            Butas {unit.unit_number}
-          </h1>
-          {estate && (
-            <p className="text-sm text-muted-foreground">{estate.name}</p>
+      <div className="flex items-center justify-between gap-4">
+        <div className="flex items-center gap-4">
+          <Button asChild variant="ghost" size="icon">
+            <Link href={`/admin/estates/${estateId}`}>
+              <CaretLeft className="size-4" />
+              <span className="sr-only">Grįžti</span>
+            </Link>
+          </Button>
+          <PageHeader title={`Butas ${unit.unit_number}`} description={estate?.name} />
+        </div>
+
+        <div className="flex items-center gap-3">
+          {ownerRow ? (
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-muted-foreground">{ownerEmail}</span>
+              <Badge variant={ownerRow.accepted_at ? 'default' : 'secondary'}>
+                {ownerRow.accepted_at ? 'Aktyvus' : 'Pakviestas'}
+              </Badge>
+            </div>
+          ) : null}
+          {!ownerRow?.accepted_at && (
+            <InviteOwnerDialog
+              unitId={unitId}
+              unitNumber={unit.unit_number}
+              estateId={estateId}
+            />
           )}
         </div>
       </div>

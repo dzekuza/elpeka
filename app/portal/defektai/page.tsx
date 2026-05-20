@@ -3,8 +3,9 @@ import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Badge } from '@/components/ui/badge'
+import { PageHeader } from '@/components/page-header'
 import { DefectForm } from '@/components/portal/defect-form'
-import { DefectCard } from '@/components/portal/defect-card'
+import { DefectCard, type EnrichedReply } from '@/components/portal/defect-card'
 import type { DefectWithDetails, DefectStatus } from '@/lib/types'
 
 export default async function DefektaiPage() {
@@ -29,7 +30,7 @@ export default async function DefektaiPage() {
   const unitId = ownership?.unit_id ?? null
 
   // Fetch defects with attachments and replies
-  let defectsWithUrls: (DefectWithDetails & { attachmentUrls: string[] })[] = []
+  let defectsWithUrls: (Omit<DefectWithDetails, 'replies'> & { attachmentUrls: string[]; replies: EnrichedReply[] })[] = []
 
   if (unitId) {
     const { data: rawDefects } = await supabase
@@ -81,27 +82,40 @@ export default async function DefektaiPage() {
             })
           )
 
-          const replies = (defect.defect_replies ?? []).map(
-            (reply: {
-              id: string
-              defect_id: string
-              author_id: string
-              body: string
-              created_at: string
-              defect_reply_attachments: {
+          const replies = await Promise.all(
+            (defect.defect_replies ?? []).map(
+              async (reply: {
                 id: string
-                reply_id: string
-                storage_path: string
+                defect_id: string
+                author_id: string
+                body: string
                 created_at: string
-              }[]
-            }) => ({
-              id: reply.id,
-              defect_id: reply.defect_id,
-              author_id: reply.author_id,
-              body: reply.body,
-              created_at: reply.created_at,
-              attachments: reply.defect_reply_attachments ?? [],
-            })
+                defect_reply_attachments: {
+                  id: string
+                  reply_id: string
+                  storage_path: string
+                  created_at: string
+                }[]
+              }) => {
+                const replyAttachmentUrls = await Promise.all(
+                  (reply.defect_reply_attachments ?? []).map(async (a) => {
+                    const { data } = await adminClient.storage
+                      .from('unit-files')
+                      .createSignedUrl(a.storage_path, 3600)
+                    return data?.signedUrl ?? ''
+                  })
+                )
+                return {
+                  id: reply.id,
+                  defect_id: reply.defect_id,
+                  author_id: reply.author_id,
+                  body: reply.body,
+                  created_at: reply.created_at,
+                  attachments: reply.defect_reply_attachments ?? [],
+                  attachmentUrls: replyAttachmentUrls.filter(Boolean),
+                }
+              }
+            )
           )
 
           return {
@@ -138,8 +152,8 @@ export default async function DefektaiPage() {
   const activeCount = defectsWithUrls.filter((d) => d.status !== 'atlikta').length
 
   return (
-    <div className="container max-w-4xl py-8">
-      <h1 className="text-2xl font-bold text-foreground mb-6">Defektai</h1>
+    <div className="space-y-8">
+      <PageHeader title="Defektai" />
 
       <Tabs defaultValue="registruoti">
         <TabsList className="mb-6">

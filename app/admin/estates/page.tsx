@@ -3,6 +3,7 @@ import { EstateWithUnitCount } from '@/lib/types'
 import { EstateTable } from '@/components/admin/estate-table'
 import { EstateFormDialog } from '@/components/admin/estate-form-dialog'
 import { Button } from '@/components/ui/button'
+import { PageHeader } from '@/components/page-header'
 import { Plus } from '@phosphor-icons/react/dist/ssr'
 
 export default async function EstatesPage() {
@@ -29,12 +30,7 @@ export default async function EstatesPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold">Nekilnojamasis turtas</h1>
-          <p className="text-sm text-muted-foreground">
-            Visi valdomi objektai
-          </p>
-        </div>
+        <PageHeader title="Nekilnojamasis turtas" description="Visi valdomi objektai" />
         <EstateFormDialog
           trigger={
             <Button>

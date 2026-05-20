@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { PageHeader } from '@/components/page-header'
 import { DownloadSimple } from '@phosphor-icons/react/dist/ssr'
 
 function formatDate(d: string) {
@@ -36,7 +37,7 @@ export default async function SutartysPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-semibold">Paslaugų sutartys</h1>
+      <PageHeader title="Paslaugų sutartys" />
       {documents.length === 0 ? (
         <p className="text-muted-foreground text-sm py-10 text-center">Dokumentų kol kas nėra.</p>
       ) : (

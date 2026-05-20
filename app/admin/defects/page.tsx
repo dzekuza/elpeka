@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { DefectTable, type DefectRow } from '@/components/admin/defect-table'
 import type { DefectStatus } from '@/lib/types'
+import { PageHeader } from '@/components/page-header'
 
 export default async function DefectsPage() {
   const supabase = await createClient()
@@ -79,10 +80,7 @@ export default async function DefectsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold">Defektai</h1>
-        <p className="text-muted-foreground text-sm mt-1">
-          Valdykite savininkų pateiktus defektų pranešimus
-        </p>
+        <PageHeader title="Defektai" description="Valdykite savininkų pateiktus defektų pranešimus" />
       </div>
       <DefectTable defects={defects} estates={estates} />
     </div>

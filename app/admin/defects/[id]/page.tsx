@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { DefectThread, type DefectDetail, type ReplyWithAttachments } from '@/components/admin/defect-thread'
 import type { DefectStatus } from '@/lib/types'
+import { PageHeader } from '@/components/page-header'
 
 interface PageProps {
   params: Promise<{ id: string }>
@@ -118,13 +119,8 @@ export default async function DefectDetailPage({ params }: PageProps) {
   }))
 
   return (
-    <div className="max-w-3xl space-y-2">
-      <div className="mb-6">
-        <h1 className="text-2xl font-semibold">Defektas</h1>
-        <p className="text-muted-foreground text-sm mt-1">
-          {defect.estate_name} · {defect.unit_number}
-        </p>
-      </div>
+    <div className="space-y-2">
+      <PageHeader title="Defektas" description={`${defect.estate_name} · ${defect.unit_number}`} />
       <DefectThread defect={defect} replies={replies} />
     </div>
   )

@@ -2,7 +2,8 @@
 
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { Buildings, WarningCircle, SignOut } from '@phosphor-icons/react'
+import { AddressBook, Buildings, SignOut, WarningCircle } from '@phosphor-icons/react'
+import { ElpekasLogo } from '@/components/elpekas-logo'
 import { createClient } from '@/lib/supabase/client'
 import {
   Sidebar,
@@ -28,6 +29,11 @@ const navItems = [
     href: '/admin/defects',
     icon: WarningCircle,
   },
+  {
+    label: 'Kontaktai',
+    href: '/admin/contacts',
+    icon: AddressBook,
+  },
 ]
 
 interface AdminSidebarProps {
@@ -46,10 +52,8 @@ export function AdminSidebar({ userEmail }: AdminSidebarProps) {
 
   return (
     <Sidebar collapsible="icon">
-      <SidebarHeader className="p-4">
-        <span className="text-lg font-bold tracking-widest text-sidebar-primary group-data-[collapsible=icon]:hidden">
-          ELPEKAS
-        </span>
+      <SidebarHeader className="px-4 py-5">
+        <ElpekasLogo />
       </SidebarHeader>
 
       <SidebarContent>

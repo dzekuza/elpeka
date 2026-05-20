@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { PageHeader } from '@/components/page-header'
 import {
   Table,
   TableBody,
@@ -15,6 +16,9 @@ import { Badge } from '@/components/ui/badge'
 import { CaretLeft, PencilSimpleLine } from '@phosphor-icons/react/dist/ssr'
 import { InviteOwnerDialog } from '@/components/admin/invite-owner-dialog'
 import { UnitFormDialog } from '@/components/admin/unit-form-dialog'
+import { EstatePhotosSection } from '@/components/admin/estate-photos-section'
+import { EstateContactsSection } from '@/components/admin/estate-contacts-section'
+import type { Contact } from '@/lib/types'
 
 interface UnitRow {
   id: string
@@ -56,6 +60,45 @@ export default async function EstateDetailPage({
   if (estateError || !estate) {
     notFound()
   }
+
+  // Fetch estate photos from storage
+  interface EstatePhoto { storagePath: string; url: string; name: string }
+  const estatePhotos: EstatePhoto[] = []
+  {
+    const { data: files } = await adminClient.storage
+      .from('unit-files')
+      .list(`estate-photos/${id}`, { limit: 50 })
+
+    if (files && files.length > 0) {
+      const { data: signed } = await adminClient.storage
+        .from('unit-files')
+        .createSignedUrls(
+          files.map((f) => `estate-photos/${id}/${f.name}`),
+          60 * 60
+        )
+      for (const s of signed ?? []) {
+        if (s.signedUrl && s.path) {
+          const name = s.path.split('/').pop() ?? s.path
+          estatePhotos.push({ storagePath: s.path, url: s.signedUrl, name })
+        }
+      }
+    }
+  }
+
+  const { data: allContactsData } = await supabase
+    .from('contacts')
+    .select('*')
+    .order('title', { ascending: true })
+
+  const allContacts = (allContactsData ?? []) as Contact[]
+
+  const { data: assignedData } = await supabase
+    .from('estate_contacts')
+    .select('contact_id')
+    .eq('estate_id', id)
+
+  const assignedIds = new Set((assignedData ?? []).map((r) => r.contact_id))
+  const assignedContacts = allContacts.filter((c) => assignedIds.has(c.id))
 
   const { data: unitOwnersData } = await supabase
     .from('unit_owners')
@@ -114,10 +157,21 @@ export default async function EstateDetailPage({
             <span className="sr-only">Grįžti</span>
           </Link>
         </Button>
-        <div>
-          <h1 className="text-2xl font-semibold">{estate.name}</h1>
-          <p className="text-sm text-muted-foreground">{estate.address}</p>
-        </div>
+        <PageHeader title={estate.name} description={estate.address} />
+      </div>
+
+      <div>
+        <h2 className="text-lg font-medium mb-4">Nuotraukos</h2>
+        <EstatePhotosSection estateId={id} photos={estatePhotos} />
+      </div>
+
+      <div>
+        <h2 className="text-lg font-medium mb-4">Kontaktai</h2>
+        <EstateContactsSection
+          estateId={id}
+          assignedContacts={assignedContacts}
+          allContacts={allContacts}
+        />
       </div>
 
       <div>

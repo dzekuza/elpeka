@@ -1,37 +1,83 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Phone, EnvelopeOpen, MapPin, Clock } from '@phosphor-icons/react/dist/ssr'
+import { redirect } from 'next/navigation'
+import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
+import { PageHeader } from '@/components/page-header'
+import { PortalContactCard } from '@/components/portal/portal-contact-card'
+import type { ContactWithDocuments } from '@/lib/types'
 
-const contacts = [
-  { icon: MapPin, label: 'Adresas', value: 'Gedimino pr. 1, Vilnius, Lietuva' },
-  { icon: Phone, label: 'Telefonas', value: '+370 600 00000' },
-  { icon: EnvelopeOpen, label: 'El. paštas', value: 'info@elpekas.lt' },
-  { icon: Clock, label: 'Darbo laikas', value: 'I–V: 8:00–17:00' },
-]
+export default async function KontaktaiPage() {
+  const supabase = await createClient()
+  const adminClient = createAdminClient()
 
-export default function KontaktaiPage() {
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) redirect('/login')
+
+  const { data: ownership } = await supabase
+    .from('unit_owners')
+    .select('unit_id, units(estate_id)')
+    .eq('user_id', user.id)
+    .not('accepted_at', 'is', null)
+    .maybeSingle()
+
+  const estateId = (ownership?.units as unknown as { estate_id: string } | null)?.estate_id ?? null
+
+  type ContactRow = ContactWithDocuments & { documentUrls: Record<string, string> }
+  let contacts: ContactRow[] = []
+
+  if (estateId) {
+    const { data: rows } = await supabase
+      .from('estate_contacts')
+      .select('contacts(*, documents:contact_documents(*))')
+      .eq('estate_id', estateId)
+
+    const raw = (rows ?? [])
+      .map((r) => r.contacts)
+      .filter(Boolean) as unknown as ContactWithDocuments[]
+
+    contacts = await Promise.all(
+      raw.map(async (contact) => {
+        const documentUrls: Record<string, string> = {}
+        if (contact.documents.length > 0) {
+          const { data: signed } = await adminClient.storage
+            .from('unit-files')
+            .createSignedUrls(
+              contact.documents.map((d) => d.storage_path),
+              60 * 60
+            )
+          for (const s of signed ?? []) {
+            if (s.signedUrl && s.path) {
+              const doc = contact.documents.find((d) => d.storage_path === s.path)
+              if (doc) documentUrls[doc.id] = s.signedUrl
+            }
+          }
+        }
+        return { ...contact, documentUrls }
+      })
+    )
+  }
+
   return (
-    <div className="space-y-6">
-      <h1 className="text-2xl font-semibold">Kontaktai</h1>
-      <Card className="max-w-lg">
-        <CardHeader>
-          <CardTitle className="text-base">ELPEKAS, UAB</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <dl className="space-y-4">
-            {contacts.map(({ icon: Icon, label, value }) => (
-              <div key={label} className="flex items-start gap-3">
-                <div className="mt-0.5 rounded-md bg-primary/10 p-1.5">
-                  <Icon className="size-4 text-primary" />
-                </div>
-                <div>
-                  <dt className="text-xs text-muted-foreground">{label}</dt>
-                  <dd className="text-sm font-medium">{value}</dd>
-                </div>
-              </div>
-            ))}
-          </dl>
-        </CardContent>
-      </Card>
+    <div className="flex flex-col gap-8">
+      <PageHeader
+        title="Kontaktai"
+        description="Čia rasite rangovų informaciją susijusią su jūsų objektu"
+      />
+
+      {contacts.length === 0 ? (
+        <p className="text-sm text-muted-foreground py-10 text-center">
+          Kontaktų kol kas nėra.
+        </p>
+      ) : (
+        <div className="flex flex-col gap-4">
+          {contacts.map((contact) => (
+            <PortalContactCard
+              key={contact.id}
+              contact={contact}
+              documentUrls={contact.documentUrls}
+            />
+          ))}
+        </div>
+      )}
     </div>
   )
 }
