@@ -101,3 +101,37 @@ export interface UnitWithOwner extends Unit {
 export interface EstateWithUnitCount extends Estate {
   unit_count: number
 }
+
+export type ContactCategory =
+  | 'windows'
+  | 'heating'
+  | 'water'
+  | 'electrical'
+  | 'waste'
+  | 'internet'
+  | 'general'
+  | 'construction'
+
+export interface Contact {
+  id: string
+  category: ContactCategory
+  title: string
+  company_name: string | null
+  phone: string | null
+  email: string | null
+  description: string | null
+  footnote: string | null
+  created_at: string
+}
+
+export interface ContactDocument {
+  id: string
+  contact_id: string
+  name: string
+  storage_path: string
+  created_at: string
+}
+
+export interface ContactWithDocuments extends Contact {
+  documents: ContactDocument[]
+}
