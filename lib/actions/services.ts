@@ -1,0 +1,44 @@
+'use server'
+
+import { revalidatePath } from 'next/cache'
+import { createClient } from '@/lib/supabase/server'
+import type { ServiceCategory } from '@/lib/types'
+
+async function requireAdmin() {
+  const supabase = await createClient()
+  const { data: { user }, error } = await supabase.auth.getUser()
+  if (error || !user) throw new Error('Unauthorized')
+  if (user.user_metadata?.role !== 'admin') throw new Error('Forbidden')
+  return { supabase, user }
+}
+
+export async function upsertUnitService(
+  unitId: string,
+  category: ServiceCategory,
+  data: { meter_number: string | null; description: string | null }
+): Promise<void> {
+  const { supabase } = await requireAdmin()
+  const { error } = await supabase
+    .from('unit_services')
+    .upsert(
+      { unit_id: unitId, category, meter_number: data.meter_number, description: data.description },
+      { onConflict: 'unit_id,category' }
+    )
+  if (error) throw new Error(error.message)
+  revalidatePath('/admin/estates', 'layout')
+}
+
+export async function markServiceCompleted(serviceId: string): Promise<void> {
+  const supabase = await createClient()
+  const { data: { user }, error: authError } = await supabase.auth.getUser()
+  if (authError || !user) throw new Error('Unauthorized')
+
+  const { error } = await supabase
+    .from('unit_services')
+    .update({ completed_at: new Date().toISOString() })
+    .eq('id', serviceId)
+    .is('completed_at', null)
+
+  if (error) throw new Error(error.message)
+  revalidatePath('/portal/sutartys')
+}
