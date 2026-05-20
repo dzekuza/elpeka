@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { Building2, AlertCircle, LogOut } from 'lucide-react'
+import { Buildings, WarningCircle, SignOut } from '@phosphor-icons/react'
 import { createClient } from '@/lib/supabase/client'
 import {
   Sidebar,
@@ -21,12 +21,12 @@ const navItems = [
   {
     label: 'Nekilnojamasis turtas',
     href: '/admin/estates',
-    icon: Building2,
+    icon: Buildings,
   },
   {
     label: 'Defektai ir pastabos',
     href: '/admin/defects',
-    icon: AlertCircle,
+    icon: WarningCircle,
   },
 ]
 
@@ -85,7 +85,7 @@ export function AdminSidebar({ userEmail }: AdminSidebarProps) {
           className="w-full justify-start gap-2 text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-0"
           onClick={handleSignOut}
         >
-          <LogOut className="size-4 shrink-0" />
+          <SignOut className="size-4 shrink-0" />
           <span className="group-data-[collapsible=icon]:hidden">Atsijungti</span>
         </Button>
       </SidebarFooter>

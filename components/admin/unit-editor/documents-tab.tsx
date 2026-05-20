@@ -2,7 +2,7 @@
 
 import { useRef, useState, useTransition } from 'react'
 import { toast } from 'sonner'
-import { Upload, Trash2, Download } from 'lucide-react'
+import { UploadSimple, Trash, DownloadSimple } from '@phosphor-icons/react'
 import { Button } from '@/components/ui/button'
 import {
   Table,
@@ -103,7 +103,7 @@ export function DocumentsTab({ unitId, documents }: DocumentsTabProps) {
           </Select>
         </div>
         <Button onClick={handleUploadClick} disabled={isPending}>
-          <Upload className="size-4 mr-2" />
+          <UploadSimple className="size-4 mr-2" />
           {isPending ? 'Įkeliama…' : 'Įkelti dokumentą'}
         </Button>
         <input
@@ -146,7 +146,7 @@ export function DocumentsTab({ unitId, documents }: DocumentsTabProps) {
                         rel="noopener noreferrer"
                         aria-label="Atsisiųsti"
                       >
-                        <Download className="size-4" />
+                        <DownloadSimple className="size-4" />
                       </a>
                     </Button>
                     <Button
@@ -156,7 +156,7 @@ export function DocumentsTab({ unitId, documents }: DocumentsTabProps) {
                       disabled={isPending}
                       aria-label="Ištrinti"
                     >
-                      <Trash2 className="size-4 text-destructive" />
+                      <Trash className="size-4 text-destructive" />
                     </Button>
                   </div>
                 </TableCell>

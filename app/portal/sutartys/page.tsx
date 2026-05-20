@@ -3,7 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Download, FileDown } from 'lucide-react'
+import { DownloadSimple } from '@phosphor-icons/react'
 
 function formatDate(d: string) {
   return new Date(d).toLocaleDateString('lt-LT', { year: 'numeric', month: '2-digit', day: '2-digit' })
@@ -55,7 +55,7 @@ export default async function SutartysPage() {
                 </div>
                 <Button asChild variant="ghost" size="sm">
                   <a href={`/api/documents/${doc.id}/download`} target="_blank" rel="noopener noreferrer">
-                    <FileDown className="size-4 mr-1" />
+                    <DownloadSimple className="size-4 mr-1" />
                     Atsisiųsti
                   </a>
                 </Button>

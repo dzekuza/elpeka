@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import { ChevronLeft } from 'lucide-react'
+import { CaretLeft } from '@phosphor-icons/react'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { Button } from '@/components/ui/button'
@@ -84,7 +84,7 @@ export default async function UnitDetailPage({
       <div className="flex items-center gap-4">
         <Button asChild variant="ghost" size="icon">
           <Link href={`/admin/estates/${estateId}`}>
-            <ChevronLeft className="size-4" />
+            <CaretLeft className="size-4" />
             <span className="sr-only">Grįžti</span>
           </Link>
         </Button>

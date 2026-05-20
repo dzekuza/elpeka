@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { toast } from 'sonner'
-import { Pencil, Trash2, Eye } from 'lucide-react'
+import { PencilSimpleLine, Trash, Eye } from '@phosphor-icons/react'
 import { EstateWithUnitCount } from '@/lib/types'
 import { deleteEstate } from '@/lib/actions/estates'
 import { EstateFormDialog } from './estate-form-dialog'
@@ -93,7 +93,7 @@ export function EstateTable({ estates }: EstateTableProps) {
                       estate={estate}
                       trigger={
                         <Button variant="ghost" size="icon">
-                          <Pencil className="size-4" />
+                          <PencilSimpleLine className="size-4" />
                           <span className="sr-only">Redaguoti</span>
                         </Button>
                       }
@@ -104,7 +104,7 @@ export function EstateTable({ estates }: EstateTableProps) {
                       className="text-destructive hover:text-destructive"
                       onClick={() => setDeleteTarget(estate)}
                     >
-                      <Trash2 className="size-4" />
+                      <Trash className="size-4" />
                       <span className="sr-only">Ištrinti</span>
                     </Button>
                   </div>

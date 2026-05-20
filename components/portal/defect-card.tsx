@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Image from 'next/image'
-import { ChevronDown, ChevronUp, Info } from 'lucide-react'
+import { CaretDown, CaretUp, Info } from '@phosphor-icons/react'
 import {
   Card,
   CardContent,
@@ -96,9 +96,9 @@ export function DefectCard({ defect }: DefectCardProps) {
             >
               Peržiūrėti pranešimą
               {expanded ? (
-                <ChevronUp className="h-4 w-4" />
+                <CaretUp className="h-4 w-4" />
               ) : (
-                <ChevronDown className="h-4 w-4" />
+                <CaretDown className="h-4 w-4" />
               )}
             </Button>
 

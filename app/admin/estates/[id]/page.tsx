@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/table'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { ChevronLeft, Pencil } from 'lucide-react'
+import { CaretLeft, PencilSimpleLine } from '@phosphor-icons/react/dist/ssr'
 import { InviteOwnerDialog } from '@/components/admin/invite-owner-dialog'
 import { UnitFormDialog } from '@/components/admin/unit-form-dialog'
 
@@ -110,7 +110,7 @@ export default async function EstateDetailPage({
       <div className="flex items-center gap-4">
         <Button asChild variant="ghost" size="icon">
           <Link href="/admin/estates">
-            <ChevronLeft className="size-4" />
+            <CaretLeft className="size-4" />
             <span className="sr-only">Grįžti</span>
           </Link>
         </Button>
@@ -175,7 +175,7 @@ export default async function EstateDetailPage({
                         )}
                         <Button asChild variant="ghost" size="sm">
                           <Link href={`/admin/estates/${id}/units/${unit.id}`}>
-                            <Pencil className="size-4 mr-1" />
+                            <PencilSimpleLine className="size-4 mr-1" />
                             Redaguoti
                           </Link>
                         </Button>

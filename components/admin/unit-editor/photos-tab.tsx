@@ -4,7 +4,7 @@ import { useCallback, useState, useTransition } from 'react'
 import { useDropzone } from 'react-dropzone'
 import Image from 'next/image'
 import { toast } from 'sonner'
-import { Camera, Trash2, Upload, ImagePlus } from 'lucide-react'
+import { Camera, Trash, UploadSimple } from '@phosphor-icons/react'
 import { Button } from '@/components/ui/button'
 import { uploadUnitPhoto, deleteDocument } from '@/lib/actions/units'
 
@@ -94,7 +94,7 @@ export function PhotosTab({ unitId, photos }: PhotosTabProps) {
         }`}
       >
         <input {...getInputProps()} />
-        <ImagePlus className="size-8 mx-auto mb-3 text-muted-foreground" />
+        <Camera className="size-8 mx-auto mb-3 text-muted-foreground" />
         <p className="text-sm text-muted-foreground">
           {isDragActive
             ? 'Paleiskite failus čia…'
@@ -124,13 +124,13 @@ export function PhotosTab({ unitId, photos }: PhotosTabProps) {
                   onClick={() => removePreview(index)}
                   aria-label="Pašalinti"
                 >
-                  <Trash2 className="size-3" />
+                  <Trash className="size-3" />
                 </Button>
               </div>
             ))}
           </div>
           <Button onClick={handleUpload} disabled={isPending}>
-            <Upload className="size-4 mr-2" />
+            <UploadSimple className="size-4 mr-2" />
             {isPending ? 'Įkeliama…' : `Įkelti ${previews.length} nuotrauką(-as)`}
           </Button>
         </div>
@@ -156,7 +156,7 @@ export function PhotosTab({ unitId, photos }: PhotosTabProps) {
                   disabled={isPending}
                   aria-label="Ištrinti"
                 >
-                  <Trash2 className="size-3" />
+                  <Trash className="size-3" />
                 </Button>
               </div>
             ))}

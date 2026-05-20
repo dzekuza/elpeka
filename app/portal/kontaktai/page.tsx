@@ -1,10 +1,10 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Phone, Mail, MapPin, Clock } from 'lucide-react'
+import { Phone, EnvelopeOpen, MapPin, Clock } from '@phosphor-icons/react'
 
 const contacts = [
   { icon: MapPin, label: 'Adresas', value: 'Gedimino pr. 1, Vilnius, Lietuva' },
   { icon: Phone, label: 'Telefonas', value: '+370 600 00000' },
-  { icon: Mail, label: 'El. paštas', value: 'info@elpekas.lt' },
+  { icon: EnvelopeOpen, label: 'El. paštas', value: 'info@elpekas.lt' },
   { icon: Clock, label: 'Darbo laikas', value: 'I–V: 8:00–17:00' },
 ]
 

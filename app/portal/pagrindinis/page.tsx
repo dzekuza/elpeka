@@ -2,7 +2,7 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Building2, Layers, Ruler, Hash } from 'lucide-react'
+import { Buildings, Stack, Resize, Hash } from '@phosphor-icons/react'
 
 export default async function PagrindiniPage() {
   const supabase = await createClient()
@@ -40,11 +40,11 @@ export default async function PagrindiniPage() {
   const estate = (unit?.estates as unknown as EstateShape)
 
   const stats = [
-    { label: 'Kompleksas', value: estate?.name ?? '—', icon: Building2 },
+    { label: 'Kompleksas', value: estate?.name ?? '—', icon: Buildings },
     { label: 'Adresas', value: estate?.address ?? '—', icon: Hash },
     { label: 'Buto nr.', value: unit?.unit_number ?? '—', icon: Hash },
-    { label: 'Aukštas', value: unit?.floor != null ? `${unit.floor} aukštas` : '—', icon: Layers },
-    { label: 'Plotas', value: unit?.area_sqm != null ? `${unit.area_sqm} m²` : '—', icon: Ruler },
+    { label: 'Aukštas', value: unit?.floor != null ? `${unit.floor} aukštas` : '—', icon: Stack },
+    { label: 'Plotas', value: unit?.area_sqm != null ? `${unit.area_sqm} m²` : '—', icon: Resize },
   ]
 
   return (

@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from 'react'
 import { useDropzone } from 'react-dropzone'
-import { X, Upload } from 'lucide-react'
+import { X, UploadSimple } from '@phosphor-icons/react'
 import Image from 'next/image'
 import { toast } from 'sonner'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -141,7 +141,7 @@ export function DefectForm({ unitId }: DefectFormProps) {
               ].join(' ')}
             >
               <input {...getInputProps()} />
-              <Upload className="h-8 w-8 text-muted-foreground" />
+              <UploadSimple className="h-8 w-8 text-muted-foreground" />
               <p className="text-sm text-muted-foreground text-center">
                 {isDragActive
                   ? 'Paleiskite čia...'

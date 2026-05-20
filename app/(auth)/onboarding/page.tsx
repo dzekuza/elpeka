@@ -1,15 +1,15 @@
 import Link from 'next/link'
 import {
-  Building2,
+  Buildings,
   ListChecks,
   Camera,
   FileText,
   Headset,
-} from 'lucide-react'
+} from '@phosphor-icons/react'
 import { Button } from '@/components/ui/button'
 
 const features = [
-  { icon: Building2, label: 'Peržiūrėkite savo būsto informaciją' },
+  { icon: Buildings, label: 'Peržiūrėkite savo būsto informaciją' },
   { icon: ListChecks, label: 'Praneškite apie defektus ir sekite jų sprendimo eigą' },
   { icon: Camera, label: 'Peržiūrėkite objekto nuotraukas' },
   { icon: FileText, label: 'Valdykite su paslaugų sutartimis susijusią informaciją' },
@@ -65,7 +65,7 @@ export default function OnboardingPage() {
             Dimensions: roughly 680×748px.
           */}
           <div className="flex h-full items-center justify-center text-muted-foreground">
-            <Building2 className="size-24 opacity-20" />
+            <Buildings className="size-24 opacity-20" />
           </div>
         </div>
       </div>
