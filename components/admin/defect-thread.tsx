@@ -3,9 +3,10 @@
 import { useState, useCallback, useTransition } from 'react'
 import { useDropzone } from 'react-dropzone'
 import { toast } from 'sonner'
-import { Check, Camera, X, ArrowRight } from '@phosphor-icons/react'
+import { Check, Camera, X, ArrowRight, Trash } from '@phosphor-icons/react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { Dialog, DialogContent } from '@/components/ui/dialog'
 import { Textarea } from '@/components/ui/textarea'
 import {
   Select,
@@ -14,7 +15,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { updateDefectStatus, addDefectReply } from '@/lib/actions/defects'
+import { updateDefectStatus, addDefectReply, deleteDefect } from '@/lib/actions/defects'
 import type { DefectStatus, DefectAttachment, DefectReply, DefectReplyAttachment } from '@/lib/types'
 import { cn } from '@/lib/utils'
 
@@ -77,26 +78,54 @@ function shortId(id: string): string {
 }
 
 function PhotoGrid({ paths }: { paths: string[] }) {
+  const [lightbox, setLightbox] = useState<string | null>(null)
   if (paths.length === 0) return null
   return (
-    <div className="flex flex-wrap gap-2 mt-3">
-      {paths.map((path) => (
-        <a
-          key={path}
-          href={`/api/storage/preview?path=${encodeURIComponent(path)}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="relative size-20 rounded-lg overflow-hidden border border-border hover:opacity-80 transition-opacity"
-        >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={`/api/storage/preview?path=${encodeURIComponent(path)}`}
-            alt="Nuotrauka"
-            className="size-full object-cover"
-          />
-        </a>
-      ))}
-    </div>
+    <>
+      <div className="flex flex-wrap gap-2 mt-3">
+        {paths.map((path) => {
+          const previewUrl = `/api/storage/preview?path=${encodeURIComponent(path)}`
+          const isVideo = /\.(mp4|mov|avi|webm)$/i.test(path)
+          return (
+            <button
+              key={path}
+              type="button"
+              onClick={() => setLightbox(previewUrl)}
+              className="relative size-20 rounded-lg overflow-hidden border border-border hover:opacity-80 transition-opacity cursor-pointer"
+            >
+              {isVideo ? (
+                <video src={previewUrl} className="size-full object-cover" muted playsInline />
+              ) : (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={previewUrl} alt="Nuotrauka" className="size-full object-cover" />
+              )}
+            </button>
+          )
+        })}
+      </div>
+
+      <Dialog open={!!lightbox} onOpenChange={(open) => { if (!open) setLightbox(null) }}>
+        <DialogContent className="max-w-3xl w-full p-0 bg-black border-0 overflow-hidden" aria-describedby={undefined}>
+          <button
+            type="button"
+            onClick={() => setLightbox(null)}
+            className="absolute top-3 right-3 z-10 rounded-full bg-black/60 p-1.5 text-white hover:bg-black/80 transition-colors"
+            aria-label="Uždaryti"
+          >
+            <X size={18} />
+          </button>
+          {lightbox && (() => {
+            const isVideo = /\.(mp4|mov|avi|webm)(\?|&|$)/i.test(lightbox)
+            return isVideo ? (
+              <video src={lightbox} className="w-full max-h-[85vh] object-contain" controls autoPlay playsInline />
+            ) : (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={lightbox} alt="Peržiūra" className="w-full max-h-[85vh] object-contain" />
+            )
+          })()}
+        </DialogContent>
+      </Dialog>
+    </>
   )
 }
 
@@ -143,13 +172,17 @@ export function DefectInfoBanner({
   defect,
   currentStatus,
   onStatusChange,
+  onDelete,
   isPending,
 }: {
   defect: DefectDetail
   currentStatus: DefectStatus
   onStatusChange: (s: DefectStatus) => void
+  onDelete: () => void
   isPending: boolean
 }) {
+  const [confirmDelete, setConfirmDelete] = useState(false)
+
   return (
     <div className="rounded-2xl bg-card border border-border p-5 space-y-5">
       {/* Header row */}
@@ -159,9 +192,27 @@ export function DefectInfoBanner({
           <h2 className="text-lg font-semibold text-foreground">{defect.title}</h2>
           <p className="text-sm text-muted-foreground">{defect.estate_name} · Butas {defect.unit_number}</p>
         </div>
-        <Badge className={STATUS_BADGE_CLASS[currentStatus]}>
-          {STATUS_LABELS[currentStatus]}
-        </Badge>
+        <div className="flex items-center gap-2">
+          {confirmDelete ? (
+            <>
+              <span className="text-xs text-muted-foreground">Ištrinti defektą?</span>
+              <Button size="sm" variant="destructive" onClick={onDelete} disabled={isPending}>
+                Taip, ištrinti
+              </Button>
+              <Button size="sm" variant="ghost" onClick={() => setConfirmDelete(false)} disabled={isPending}>
+                Atšaukti
+              </Button>
+            </>
+          ) : (
+            <Button size="sm" variant="ghost" className="text-muted-foreground hover:text-destructive" onClick={() => setConfirmDelete(true)}>
+              <Trash size={15} className="mr-1" />
+              Ištrinti
+            </Button>
+          )}
+          <Badge className={STATUS_BADGE_CLASS[currentStatus]}>
+            {STATUS_LABELS[currentStatus]}
+          </Badge>
+        </div>
       </div>
 
       {/* Timeline stepper */}
@@ -215,6 +266,16 @@ export function DefectThread({ defect, replies }: DefectThreadProps) {
     multiple: false,
   })
 
+  function handleDelete() {
+    startTransition(async () => {
+      try {
+        await deleteDefect(defect.id)
+      } catch {
+        toast.error('Nepavyko ištrinti defekto')
+      }
+    })
+  }
+
   function handleStatusChange(status: DefectStatus) {
     setCurrentStatus(status)
     startTransition(async () => {
@@ -254,6 +315,7 @@ export function DefectThread({ defect, replies }: DefectThreadProps) {
         defect={defect}
         currentStatus={currentStatus}
         onStatusChange={handleStatusChange}
+        onDelete={handleDelete}
         isPending={isPending}
       />
 

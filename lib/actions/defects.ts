@@ -1,6 +1,7 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
+import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import type { DefectStatus } from '@/lib/types'
@@ -252,4 +253,50 @@ export async function submitDefect(
   }
 
   revalidatePath('/portal/defektai')
+}
+
+export async function deleteDefect(defectId: string): Promise<void> {
+  await requireAdmin()
+  const adminClient = createAdminClient()
+
+  // Collect storage paths from defect attachments and reply attachments
+  const { data: attachments } = await adminClient
+    .from('defect_attachments')
+    .select('storage_path')
+    .eq('defect_id', defectId)
+
+  const { data: replies } = await adminClient
+    .from('defect_replies')
+    .select('id')
+    .eq('defect_id', defectId)
+
+  const replyIds = (replies ?? []).map((r) => r.id)
+  let replyPaths: string[] = []
+
+  if (replyIds.length > 0) {
+    const { data: replyAttachments } = await adminClient
+      .from('defect_reply_attachments')
+      .select('storage_path')
+      .in('reply_id', replyIds)
+    replyPaths = (replyAttachments ?? []).map((a) => a.storage_path)
+  }
+
+  const allPaths = [
+    ...(attachments ?? []).map((a) => a.storage_path),
+    ...replyPaths,
+  ]
+
+  if (allPaths.length > 0) {
+    await adminClient.storage.from('unit-files').remove(allPaths)
+  }
+
+  const { error } = await adminClient
+    .from('defects')
+    .delete()
+    .eq('id', defectId)
+
+  if (error) throw new Error(error.message)
+
+  revalidatePath('/admin/defects')
+  redirect('/admin/defects')
 }
