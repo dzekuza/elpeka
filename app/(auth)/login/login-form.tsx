@@ -122,27 +122,25 @@ export function LoginForm() {
               </Link>
             </div>
 
-            {process.env.NODE_ENV === 'development' && (
-              <div className="flex flex-col gap-2 border-t border-border pt-4">
-                <p className="text-center text-xs text-foreground/40">Greitas prisijungimas (dev)</p>
-                <div className="flex gap-2">
-                  <button
-                    type="button"
-                    onClick={() => { setEmail('admin@admin.com'); setPassword('Admin123.'); }}
-                    className="flex-1 rounded-lg border border-border px-3 py-2 text-xs font-medium text-foreground/60 transition-colors hover:bg-muted"
-                  >
-                    Admin
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => { setEmail('owner@test.com'); setPassword('Admin123.'); }}
-                    className="flex-1 rounded-lg border border-border px-3 py-2 text-xs font-medium text-foreground/60 transition-colors hover:bg-muted"
-                  >
-                    Owner
-                  </button>
-                </div>
+            <div className="flex flex-col gap-2 border-t border-border pt-4">
+              <p className="text-center text-xs text-foreground/40">Greitas prisijungimas</p>
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => { setEmail('admin@admin.com'); setPassword('Admin123.'); }}
+                  className="flex-1 rounded-lg border border-border px-3 py-2 text-xs font-medium text-foreground/60 transition-colors hover:bg-muted"
+                >
+                  Admin
+                </button>
+                <button
+                  type="button"
+                  onClick={() => { setEmail('owner@test.com'); setPassword('Admin123.'); }}
+                  className="flex-1 rounded-lg border border-border px-3 py-2 text-xs font-medium text-foreground/60 transition-colors hover:bg-muted"
+                >
+                  Owner
+                </button>
               </div>
-            )}
+            </div>
           </form>
         </div>
 
