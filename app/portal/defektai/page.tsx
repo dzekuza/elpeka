@@ -1,12 +1,12 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Badge } from '@/components/ui/badge'
+import { Card, CardContent } from '@/components/ui/card'
 import { PageHeader } from '@/components/page-header'
-import { DefectForm } from '@/components/portal/defect-form'
 import { DefectCard, type EnrichedReply } from '@/components/portal/defect-card'
+import { DefectSubmitModal } from '@/components/portal/defect-submit-modal'
 import type { DefectWithDetails, DefectStatus } from '@/lib/types'
+import { PortalAnimateIn } from '@/components/portal/portal-animate-in'
 
 export default async function DefektaiPage() {
   const supabase = await createClient()
@@ -19,7 +19,6 @@ export default async function DefektaiPage() {
     redirect('/login')
   }
 
-  // Resolve unit for this owner
   const { data: ownership } = await supabase
     .from('unit_owners')
     .select('unit_id')
@@ -29,7 +28,6 @@ export default async function DefektaiPage() {
 
   const unitId = ownership?.unit_id ?? null
 
-  // Fetch defects with attachments and replies
   let defectsWithUrls: (Omit<DefectWithDetails, 'replies'> & { attachmentUrls: string[]; replies: EnrichedReply[] })[] = []
 
   if (unitId) {
@@ -149,51 +147,35 @@ export default async function DefektaiPage() {
     }
   }
 
-  const activeCount = defectsWithUrls.filter((d) => d.status !== 'atlikta').length
-
   return (
-    <div className="space-y-8">
-      <PageHeader title="Defektai" />
+    <PortalAnimateIn className="space-y-8">
+      <PageHeader
+        title="Defektai ir pastabos"
+        action={unitId ? <DefectSubmitModal unitId={unitId} /> : undefined}
+      />
 
-      <Tabs defaultValue="registruoti">
-        <TabsList className="mb-6">
-          <TabsTrigger value="registruoti">Registruoti defektą</TabsTrigger>
-          <TabsTrigger value="sekti" className="flex items-center gap-2">
-            Sekti eigą
-            {activeCount > 0 && (
-              <Badge variant="secondary" className="ml-1 text-xs">
-                {activeCount}
-              </Badge>
-            )}
-          </TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="registruoti">
-          {unitId ? (
-            <DefectForm unitId={unitId} />
-          ) : (
+      {!unitId ? (
+        <p className="text-muted-foreground text-sm">
+          Nepriskirtas joks butas. Susisiekite su administratoriumi.
+        </p>
+      ) : defectsWithUrls.length === 0 ? (
+        <Card>
+          <CardContent className="flex flex-col items-center justify-center py-16 text-center gap-3">
             <p className="text-muted-foreground text-sm">
-              Nepriskirtas joks butas. Susisiekite su administratoriumi.
+              Kol kas defektų nėra.
             </p>
-          )}
-        </TabsContent>
-
-        <TabsContent value="sekti">
-          {defectsWithUrls.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-16 text-center gap-2">
-              <p className="text-muted-foreground text-sm">
-                Kol kas defektų nėra. Pateikite pirmą pranešimą skirtuke &quot;Registruoti defektą&quot;.
-              </p>
-            </div>
-          ) : (
-            <div className="flex flex-col gap-4">
-              {defectsWithUrls.map((defect) => (
-                <DefectCard key={defect.id} defect={defect} />
-              ))}
-            </div>
-          )}
-        </TabsContent>
-      </Tabs>
-    </div>
+            <p className="text-muted-foreground text-xs">
+              Pastebėję defektą, spauskite &ldquo;Pranešti defektą&rdquo; viršuje.
+            </p>
+          </CardContent>
+        </Card>
+      ) : (
+        <div className="flex flex-col gap-4">
+          {defectsWithUrls.map((defect) => (
+            <DefectCard key={defect.id} defect={defect} />
+          ))}
+        </div>
+      )}
+    </PortalAnimateIn>
   )
 }

@@ -12,6 +12,14 @@ async function requireAdmin() {
   return { supabase, user }
 }
 
+async function requireOwner() {
+  const supabase = await createClient()
+  const { data: { user }, error } = await supabase.auth.getUser()
+  if (error || !user) throw new Error('Unauthorized')
+  if (user.user_metadata?.role !== 'owner') throw new Error('Forbidden')
+  return { supabase, user }
+}
+
 export async function upsertUnitService(
   unitId: string,
   category: ServiceCategory,
@@ -29,9 +37,7 @@ export async function upsertUnitService(
 }
 
 export async function markServiceCompleted(serviceId: string): Promise<void> {
-  const supabase = await createClient()
-  const { data: { user }, error: authError } = await supabase.auth.getUser()
-  if (authError || !user) throw new Error('Unauthorized')
+  const { supabase } = await requireOwner()
 
   const { error } = await supabase
     .from('unit_services')
@@ -41,4 +47,9 @@ export async function markServiceCompleted(serviceId: string): Promise<void> {
 
   if (error) throw new Error(error.message)
   revalidatePath('/portal/sutartys')
+}
+
+// TODO: cron job — send reminder emails to owners with incomplete unit_services; respect unit_owners.notifications_enabled
+export async function sendServiceContractReminders(): Promise<void> {
+  // stub — implement as a Vercel cron at /api/cron/service-reminders
 }

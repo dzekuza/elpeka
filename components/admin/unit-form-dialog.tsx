@@ -23,28 +23,12 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
 import { createUnit } from '@/lib/actions/units'
-
-const HEATING_OPTIONS = [
-  { value: 'Centrinis', label: 'Centrinis' },
-  { value: 'Autonominis', label: 'Autonominis' },
-  { value: 'Elektra', label: 'Elektra' },
-]
 
 const schema = z.object({
   unit_number: z.string().min(1, 'Įveskite buto numerį'),
   floor: z.string().optional(),
   area_sqm: z.string().optional(),
-  heating_type: z.string().optional(),
-  building_materials: z.string().optional(),
-  floor_covering: z.string().optional(),
 })
 
 type FormValues = z.infer<typeof schema>
@@ -60,28 +44,17 @@ export function UnitFormDialog({ estateId }: { estateId: string }) {
       unit_number: '',
       floor: '',
       area_sqm: '',
-      heating_type: '',
-      building_materials: '',
-      floor_covering: '',
     },
   })
 
   async function onSubmit(values: FormValues) {
     setError(null)
     try {
-      const technical_data = {
-        heating_type: values.heating_type || undefined,
-        building_materials: values.building_materials || undefined,
-        floor_covering: values.floor_covering || undefined,
-      }
-      const hasTechnical = Object.values(technical_data).some(Boolean)
-
       await createUnit({
         estate_id: estateId,
         unit_number: values.unit_number,
         floor: values.floor ? parseInt(values.floor) : null,
         area_sqm: values.area_sqm ? parseFloat(values.area_sqm) : null,
-        technical_data: hasTechnical ? technical_data : undefined,
       })
       form.reset()
       setOpen(false)
@@ -99,7 +72,7 @@ export function UnitFormDialog({ estateId }: { estateId: string }) {
           Pridėti butą
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>Naujas butas</DialogTitle>
         </DialogHeader>
@@ -145,62 +118,6 @@ export function UnitFormDialog({ estateId }: { estateId: string }) {
                   </FormItem>
                 )}
               />
-            </div>
-
-            <div className="border-t pt-4">
-              <p className="text-sm font-medium text-muted-foreground mb-3">Techniniai duomenys</p>
-              <div className="space-y-4">
-                <FormField
-                  control={form.control}
-                  name="heating_type"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Šildymo tipas</FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Pasirinkite šildymo tipą" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {HEATING_OPTIONS.map((opt) => (
-                            <SelectItem key={opt.value} value={opt.value}>
-                              {opt.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="building_materials"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Statybinės medžiagos</FormLabel>
-                      <FormControl>
-                        <Input placeholder="pvz. Mūriniai" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="floor_covering"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Grindų danga</FormLabel>
-                      <FormControl>
-                        <Input placeholder="pvz. Laminatas" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
             </div>
 
             {error && <p className="text-sm text-destructive">{error}</p>}

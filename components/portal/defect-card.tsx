@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { CaretDown, CaretUp, Info } from '@phosphor-icons/react'
+import { CaretDown, CaretUp, Info, X } from '@phosphor-icons/react'
 import {
   Card,
   CardContent,
@@ -9,6 +9,7 @@ import {
 } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { Dialog, DialogContent } from '@/components/ui/dialog'
 import { DefectTimeline } from '@/components/portal/defect-timeline'
 import type { DefectWithDetails, DefectStatus } from '@/lib/types'
 
@@ -26,7 +27,7 @@ const STATUS_LABELS: Record<DefectStatus, string> = {
 
 const STATUS_NEXT_STEP: Record<DefectStatus, string> = {
   pateikta: 'Jūsų pranešimas gautas. Laukiame atsakymo iš vadybininko.',
-  sprendziama: 'Defektas yra sprendžiamas. Susisieksime su Jumis.',
+  sprendziama: 'Defektas yra sprendžiamas.',
   atlikta: 'Defektas išspręstas. Ačiū!',
 }
 
@@ -56,22 +57,59 @@ function buildDates(defect: DefectWithDetails): {
 }
 
 function PhotoRow({ urls }: { urls: string[] }) {
+  const [lightbox, setLightbox] = useState<string | null>(null)
   if (urls.length === 0) return null
   return (
-    <div className="flex flex-wrap gap-2 pt-1">
-      {urls.map((url, i) => (
-        <a
-          key={i}
-          href={url}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="block h-20 w-20 rounded-md overflow-hidden border border-border shrink-0 hover:opacity-80 transition-opacity"
-        >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={url} alt={`Nuotrauka ${i + 1}`} className="h-full w-full object-cover" />
-        </a>
-      ))}
-    </div>
+    <>
+      <div className="flex flex-wrap gap-2 pt-1">
+        {urls.map((url, i) => {
+          const isVideo = /\.(mp4|mov|avi|webm)(\?|$)/i.test(url)
+          return (
+            <button
+              key={i}
+              type="button"
+              onClick={() => setLightbox(url)}
+              className="block h-20 w-20 rounded-md overflow-hidden border border-border shrink-0 hover:opacity-80 transition-opacity duration-150 ease-out cursor-pointer"
+            >
+              {isVideo ? (
+                <video src={url} className="h-full w-full object-cover" muted playsInline />
+              ) : (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={url} alt={`Nuotrauka ${i + 1}`} className="h-full w-full object-cover" />
+              )}
+            </button>
+          )
+        })}
+      </div>
+
+      <Dialog open={!!lightbox} onOpenChange={(open) => { if (!open) setLightbox(null) }}>
+        <DialogContent className="max-w-3xl w-full p-0 bg-black border-0 overflow-hidden" aria-describedby={undefined}>
+          <button
+            type="button"
+            onClick={() => setLightbox(null)}
+            className="absolute top-3 right-3 z-10 rounded-full bg-black/60 p-1.5 text-white hover:bg-black/80 transition-colors"
+            aria-label="Uždaryti"
+          >
+            <X size={18} />
+          </button>
+          {lightbox && (() => {
+            const isVideo = /\.(mp4|mov|avi|webm)(\?|$)/i.test(lightbox)
+            return isVideo ? (
+              <video
+                src={lightbox}
+                className="w-full max-h-[85vh] object-contain"
+                controls
+                autoPlay
+                playsInline
+              />
+            ) : (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={lightbox} alt="Peržiūra" className="w-full max-h-[85vh] object-contain" />
+            )
+          })()}
+        </DialogContent>
+      </Dialog>
+    </>
   )
 }
 
@@ -87,7 +125,7 @@ export function DefectCard({ defect }: DefectCardProps) {
       <CardHeader>
         <div className="flex items-start justify-between gap-4">
           <div className="flex flex-col gap-1 min-w-0">
-            <span className="font-semibold text-foreground leading-snug">
+            <span className="text-base font-semibold text-foreground leading-snug">
               {defect.title}
             </span>
             <span className="text-xs text-muted-foreground">{ticketNumber}</span>
@@ -101,9 +139,9 @@ export function DefectCard({ defect }: DefectCardProps) {
       <CardContent className="flex flex-col gap-4">
         <DefectTimeline currentStatus={defect.status} dates={dates} />
 
-        <div className="flex items-start gap-2 rounded-lg bg-amber-50 border border-amber-200 px-4 py-3">
-          <Info className="mt-0.5 h-4 w-4 shrink-0 text-amber-600" />
-          <p className="text-sm text-amber-800">{STATUS_NEXT_STEP[defect.status]}</p>
+        <div className="flex items-start gap-2 rounded-lg [background:var(--warning-bg)] border [border-color:var(--warning-border)] px-4 py-3">
+          <Info className="mt-0.5 h-4 w-4 shrink-0 [color:var(--warning-icon)]" />
+          <p className="text-sm [color:var(--warning-text)]">{STATUS_NEXT_STEP[defect.status]}</p>
         </div>
 
         {/* Collapsible original report */}

@@ -6,10 +6,10 @@ import { Camera, FileText, HouseSimple, Phone, WarningCircle } from '@phosphor-i
 
 const navItems = [
   { href: '/portal/pagrindinis', label: 'Pagrindinis', icon: HouseSimple },
-  { href: '/portal/defektai', label: 'Defektai', icon: WarningCircle, isBadge: true },
+  { href: '/portal/defektai', label: 'Defektai ir pastabos', icon: WarningCircle, isBadge: true },
   { href: '/portal/nuotraukos', label: 'Nuotraukos', icon: Camera },
   { href: '/portal/sutartys', label: 'Sutartys', icon: FileText },
-  { href: '/portal/kontaktai', label: 'Kontaktai', icon: Phone },
+  { href: '/portal/kontaktai', label: 'Rangovai', icon: Phone },
 ]
 
 interface PortalBottomNavProps {
@@ -28,6 +28,7 @@ export function PortalBottomNav({ activeDefectCount }: PortalBottomNavProps) {
             <Link
               key={href}
               href={href}
+              aria-current={isActive ? 'page' : undefined}
               className={`relative flex flex-1 flex-col items-center justify-center gap-1 py-3 text-[10px] font-medium transition-colors ${
                 isActive ? 'text-primary' : 'text-muted-foreground hover:text-foreground'
               }`}

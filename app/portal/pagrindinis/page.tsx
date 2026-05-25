@@ -3,54 +3,63 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { StepsAccordion, type PurchaseStep } from '@/components/portal/steps-accordion'
 import type { Document } from '@/lib/types'
+import { PortalAnimateIn } from '@/components/portal/portal-animate-in'
 
 const PURCHASE_STEPS: Omit<PurchaseStep, 'documents' | 'category'>[] = [
   {
     number: 1,
+    key: 'preliminari-sutartis',
     title: 'Preliminari sutartis',
     description: 'Čia yra jūsų preliminari buto pirkimo-pardavimo sutartis.',
     canOwnerUpload: false,
   },
   {
     number: 2,
+    key: 'mokėjimai',
     title: 'Mokėjimai',
-    description: 'Pasirašykite ir įkelkite mokėjimą patvirtinantį dokumentą.',
+    description: 'čia yra gautų mokėjimų dokumentai',
     canOwnerUpload: true,
   },
   {
     number: 3,
+    key: 'banko-sutartis',
     title: 'Banko sutartis ir turto vertinimas',
-    description: 'Įkelkite banko sutartį ir turto vertinimo aktą.',
+    description: 'Įkelkite banko sutartį ir turto vertinimo ataskaitą',
     canOwnerUpload: true,
   },
   {
     number: 4,
+    key: 'kadastras',
     title: 'Kadastrinių matavimų byla',
-    description: 'Įkelkite kadastrinių matavimų bylą.',
-    canOwnerUpload: true,
+    description: 'Čia yra jūsų objekto kadastrinių matavimų byla',
+    canOwnerUpload: false,
   },
   {
     number: 5,
-    title: 'Notarinė pirkimo - pardavimo sutartis',
-    description: 'Čia yra jūsų notarinė buto pirkimo-pardavimo sutartis.',
+    key: 'notarinė-sutartis',
+    title: 'Notarinė pirkimo–pardavimo sutartis',
+    description: 'čia yra jūsų notarinė objekto pirkimo-pardavimo sutartis',
     canOwnerUpload: false,
   },
   {
     number: 6,
+    key: 'registrų-centras',
     title: 'Registrų centro išrašas',
-    description: 'Įkelkite Registrų centro nuosavybės teisės išrašą.',
+    description: 'Įkelkite Registrų centro objekto išrašą',
     canOwnerUpload: true,
   },
   {
     number: 7,
+    key: 'pakvitavimas',
     title: 'Pakvitavimas',
-    description: 'Įkelkite pakvitavimą dėl buto perdavimo.',
-    canOwnerUpload: true,
+    description: 'Čia rasite notarinį pakvitavimą',
+    canOwnerUpload: false,
   },
   {
     number: 8,
+    key: 'papildomi',
     title: 'Papildomi dokumentai',
-    description: 'Įkelkite papildomus su pirkimu susijusius dokumentus.',
+    description: 'Įkelkite papildomus su objektu susijusius dokumentus.',
     canOwnerUpload: true,
   },
 ]
@@ -76,7 +85,7 @@ export default async function PagrindiniPage() {
 
   const { data: ownership } = await supabase
     .from('unit_owners')
-    .select('unit_id, accepted_at')
+    .select('unit_id, accepted_at, visible_steps')
     .eq('user_id', user.id)
     .not('accepted_at', 'is', null)
     .maybeSingle()
@@ -134,18 +143,23 @@ export default async function PagrindiniPage() {
     {}
   )
 
-  const steps: PurchaseStep[] = PURCHASE_STEPS.map((step, i) => ({
+  const allSteps: PurchaseStep[] = PURCHASE_STEPS.map((step, i) => ({
     ...step,
     category: STEP_CATEGORIES[i],
     documents: docsByCategory[STEP_CATEGORIES[i]] ?? [],
   }))
+
+  const visibleStepKeys = ownership.visible_steps as string[] | null
+  const steps = visibleStepKeys?.length
+    ? allSteps.filter((s) => visibleStepKeys.includes(s.key))
+    : allSteps
 
   const mainPhoto = photoUrls[0] ?? null
   const gridPhotos = photoUrls.slice(1, 5)
   const extraCount = Math.max(0, photoUrls.length - 5)
 
   return (
-    <div className="space-y-8">
+    <PortalAnimateIn className="space-y-8">
       {/* Hero — estate photos */}
       <div className="flex gap-4 h-56 sm:h-72">
         {/* Main photo */}
@@ -180,6 +194,7 @@ export default async function PagrindiniPage() {
                       <div className="absolute inset-0 bg-black/35" />
                       <span className="absolute inset-0 flex items-center justify-center text-white text-4xl font-semibold tracking-tight">
                         +{extraCount}
+                        <span className="sr-only"> daugiau nuotraukų</span>
                       </span>
                     </>
                   )}
@@ -192,6 +207,6 @@ export default async function PagrindiniPage() {
 
       {/* Steps accordion */}
       <StepsAccordion steps={steps} unitId={ownership.unit_id} />
-    </div>
+    </PortalAnimateIn>
   )
 }

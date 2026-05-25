@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useMemo } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import {
@@ -23,7 +23,7 @@ const navItems = [
   { href: '/portal/defektai', label: 'Defektai ir pastabos', icon: WarningCircle, badge: true },
   { href: '/portal/nuotraukos', label: 'Objekto nuotraukos', icon: Camera },
   { href: '/portal/sutartys', label: 'Paslaugų sutartys', icon: FileText },
-  { href: '/portal/kontaktai', label: 'Kontaktai', icon: Phone },
+  { href: '/portal/kontaktai', label: 'Rangovai ir kontaktai', icon: Phone },
 ]
 
 function getDisplayName(email: string) {
@@ -42,7 +42,7 @@ interface PortalSidebarProps {
 export function PortalSidebar({ userEmail, activeDefectCount }: PortalSidebarProps) {
   const pathname = usePathname()
   const router = useRouter()
-  const supabase = createClient()
+  const supabase = useMemo(() => createClient(), [])
 
   const [expanded, setExpanded] = useState(() => {
     if (typeof window === 'undefined') return true
@@ -76,10 +76,9 @@ export function PortalSidebar({ userEmail, activeDefectCount }: PortalSidebarPro
   return (
     <aside
       className={cn(
-        'hidden md:flex flex-col justify-between shrink-0 h-screen py-2 px-2 transition-[width] duration-200 ease-in-out',
+        'hidden md:flex flex-col justify-between shrink-0 h-screen py-2 px-2 transition-[width] duration-200 [transition-timing-function:cubic-bezier(0.32,0.72,0,1)] bg-sidebar',
         expanded ? 'w-[260px]' : 'w-14'
       )}
-      style={{ background: '#52596b' }}
     >
       {/* Top: header + nav — overflow-hidden here clips labels during width transition */}
       <div className={cn('flex flex-col gap-8 overflow-hidden', expanded ? 'items-start' : 'items-center')}>
@@ -119,9 +118,8 @@ export function PortalSidebar({ userEmail, activeDefectCount }: PortalSidebarPro
                 className={cn(
                   'relative flex items-center gap-2 p-2 rounded-lg transition-colors',
                   expanded ? 'w-full' : 'w-10 justify-center',
-                  isActive ? 'text-[#c2a475]' : 'text-white hover:bg-white/10'
+                  isActive ? 'text-sidebar-primary bg-sidebar-accent' : 'text-sidebar-foreground hover:bg-white/10'
                 )}
-                style={isActive ? { background: 'rgba(194,164,117,0.1)' } : undefined}
               >
                 <item.icon size={24} className="shrink-0" />
                 {expanded && (
@@ -131,12 +129,12 @@ export function PortalSidebar({ userEmail, activeDefectCount }: PortalSidebarPro
                 )}
                 {/* Badge */}
                 {showBadge && expanded && (
-                  <span className="ml-auto flex min-w-[22px] h-[22px] items-center justify-center rounded-full bg-[#ee9302] px-1.5 text-[11px] font-semibold text-white tabular-nums shrink-0">
+                  <span className="ml-auto flex min-w-[22px] h-[22px] items-center justify-center rounded-full [background:var(--status-sprendziama)] px-1.5 text-[11px] font-semibold text-white tabular-nums shrink-0">
                     {activeDefectCount}
                   </span>
                 )}
                 {showBadge && !expanded && (
-                  <span className="absolute top-1 right-1 size-2 rounded-full bg-[#ee9302]" />
+                  <span className="absolute top-1 right-1 size-2 rounded-full [background:var(--status-sprendziama)]" />
                 )}
               </Link>
             )
@@ -147,16 +145,18 @@ export function PortalSidebar({ userEmail, activeDefectCount }: PortalSidebarPro
       {/* Bottom: profile */}
       <div ref={profileRef} className="relative">
         {profileOpen && (
-          <div className="absolute bottom-full mb-2 left-0 w-44 bg-white rounded-xl shadow-lg p-1 flex flex-col gap-1 z-50">
+          <div role="menu" className="absolute bottom-full mb-2 left-0 w-44 bg-white rounded-xl shadow-lg p-1 flex flex-col gap-1 z-50">
             <Link
               href="/portal/nustatymai"
-              className="flex items-center gap-2 w-full px-2 py-2 rounded-lg text-[#1d1e20] text-sm font-medium hover:bg-gray-100 transition-colors"
+              role="menuitem"
+              className="flex items-center gap-2 w-full px-2 py-2 rounded-lg text-foreground text-sm font-medium hover:bg-gray-100 transition-colors"
               onClick={() => setProfileOpen(false)}
             >
               <Gear size={20} />
               Nustatymai
             </Link>
             <button
+              role="menuitem"
               className="flex items-center gap-2 w-full px-2 py-2 rounded-lg text-red-600 text-sm font-medium hover:bg-red-50 transition-colors"
               onClick={handleSignOut}
             >
@@ -169,7 +169,7 @@ export function PortalSidebar({ userEmail, activeDefectCount }: PortalSidebarPro
         <button
           onClick={() => setProfileOpen(!profileOpen)}
           className={cn(
-            'flex items-center p-2 rounded-lg w-full hover:bg-white/10 transition-colors',
+            'flex items-center p-2 rounded-lg w-full hover:bg-white/10 transition-colors duration-150 ease-out',
             expanded ? 'gap-2 justify-between' : 'justify-center'
           )}
         >
@@ -192,7 +192,7 @@ export function PortalSidebar({ userEmail, activeDefectCount }: PortalSidebarPro
             <CaretDown
               size={16}
               className={cn(
-                'text-white/70 shrink-0 transition-transform',
+                'text-white/70 shrink-0 transition-transform duration-200 ease-out',
                 profileOpen ? 'rotate-180' : ''
               )}
             />

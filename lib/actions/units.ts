@@ -4,7 +4,7 @@ import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import type { TechnicalData, FinancialData } from '@/lib/types'
-import { validateImageUpload, validateDocumentUpload } from '@/lib/upload-validation'
+import { validateImageUpload, validateDocumentUpload, sanitizeFileName, validateFileExtension } from '@/lib/upload-validation'
 
 async function requireAdmin() {
   const supabase = await createClient()
@@ -55,13 +55,14 @@ export async function createUnit(data: {
 
 export async function updateUnitTechnicalData(
   unitId: string,
-  data: TechnicalData
+  data: TechnicalData,
+  parking?: string | null
 ): Promise<void> {
   const { supabase } = await requireAdmin()
 
   const { error } = await supabase
     .from('units')
-    .update({ technical_data: data })
+    .update({ technical_data: data, ...(parking !== undefined && { parking }) })
     .eq('id', unitId)
 
   if (error) throw new Error(error.message)
@@ -101,8 +102,9 @@ export async function uploadUnitDocument(
   }
 
   validateDocumentUpload(file)
+  validateFileExtension(file)
 
-  const fileName = `${Date.now()}-${file.name}`
+  const fileName = `${Date.now()}-${sanitizeFileName(file.name)}`
   const storagePath = `documents/${unitId}/${fileName}`
 
   const arrayBuffer = await file.arrayBuffer()
@@ -135,7 +137,8 @@ export async function uploadUnitDocument(
 
 export async function uploadUnitPhoto(
   unitId: string,
-  formData: FormData
+  formData: FormData,
+  photoCategory: 'progress' | 'final' = 'progress'
 ): Promise<void> {
   const { supabase, user } = await requireAdmin()
   const adminClient = createAdminClient()
@@ -147,8 +150,9 @@ export async function uploadUnitPhoto(
   }
 
   validateImageUpload(file)
+  validateFileExtension(file)
 
-  const fileName = `${Date.now()}-${file.name}`
+  const fileName = `${Date.now()}-${sanitizeFileName(file.name)}`
   const storagePath = `photos/${unitId}/${fileName}`
 
   const arrayBuffer = await file.arrayBuffer()
@@ -166,6 +170,7 @@ export async function uploadUnitPhoto(
   const { error: dbError } = await supabase.from('documents').insert({
     unit_id: unitId,
     category: 'photo',
+    photo_category: photoCategory,
     name: file.name,
     storage_path: storagePath,
     uploaded_by: user.id,
@@ -204,7 +209,6 @@ export async function deleteDocument(
 
 export async function deleteOwnerDocument(
   documentId: string,
-  storagePath: string,
   unitId: string
 ): Promise<void> {
   const supabase = await createClient()
@@ -223,6 +227,17 @@ export async function deleteOwnerDocument(
 
   if (!ownership) throw new Error('Forbidden')
 
+  // Fetch through user-session client: RLS SELECT policy confirms the document
+  // belongs to this unit. We derive storage_path from DB — never from the caller.
+  const { data: document } = await supabase
+    .from('documents')
+    .select('id, storage_path, unit_id')
+    .eq('id', documentId)
+    .eq('unit_id', unitId)
+    .maybeSingle()
+
+  if (!document) throw new Error('Dokumento nerasta arba prieiga uždrausta')
+
   const { error: dbError } = await supabase
     .from('documents')
     .delete()
@@ -230,7 +245,7 @@ export async function deleteOwnerDocument(
 
   if (dbError) throw new Error(dbError.message)
 
-  await adminClient.storage.from('unit-files').remove([storagePath])
+  await adminClient.storage.from('unit-files').remove([document.storage_path])
 
   revalidatePath('/portal/pagrindinis')
 }
@@ -257,12 +272,15 @@ export async function uploadOwnerDocument(
 
   if (!ownership) throw new Error('Forbidden')
 
+  if (!/^[\w-]{1,100}$/.test(category)) throw new Error('Neleistina dokumento kategorija')
+
   const file = formData.get('file') as File | null
   if (!file) throw new Error('Trūksta failo')
 
   validateDocumentUpload(file)
+  validateFileExtension(file)
 
-  const fileName = `${Date.now()}-${file.name}`
+  const fileName = `${Date.now()}-${sanitizeFileName(file.name)}`
   const storagePath = `documents/${unitId}/${fileName}`
   const buffer = new Uint8Array(await file.arrayBuffer())
 
@@ -289,4 +307,32 @@ export async function uploadOwnerDocument(
   }
 
   revalidatePath('/portal/pagrindinis')
+}
+
+export async function updateOwnerVisibleSteps(
+  unitOwnerId: string,
+  steps: string[]
+): Promise<void> {
+  const { supabase } = await requireAdmin()
+  const adminClient = createAdminClient()
+  const { error } = await adminClient
+    .from('unit_owners')
+    .update({ visible_steps: steps })
+    .eq('id', unitOwnerId)
+  if (error) throw new Error(error.message)
+  void supabase // satisfy linter — auth check via requireAdmin above
+}
+
+export async function updateOwnerNotifications(
+  unitOwnerId: string,
+  enabled: boolean
+): Promise<void> {
+  const { supabase } = await requireAdmin()
+  const adminClient = createAdminClient()
+  const { error } = await adminClient
+    .from('unit_owners')
+    .update({ notifications_enabled: enabled })
+    .eq('id', unitOwnerId)
+  if (error) throw new Error(error.message)
+  void supabase
 }

@@ -4,6 +4,7 @@ import { PageHeader } from '@/components/page-header'
 import { ServiceCard } from '@/components/portal/service-card'
 import { WarningCircle } from '@phosphor-icons/react/dist/ssr'
 import type { UnitService } from '@/lib/types'
+import { PortalAnimateIn } from '@/components/portal/portal-animate-in'
 
 const SERVICE_ORDER = ['electrical', 'water', 'heating', 'waste'] as const
 
@@ -44,37 +45,37 @@ export default async function SutartysPage() {
     <div className="flex flex-col gap-8">
       <PageHeader
         title="Paslaugų teikimo sutartys"
-        description="Po nuosavybės registracijos sudarykite komunalinių ir kitų paslaugų sutartis savo objektui."
+        description="Užbaikite likusius žingsnius, kad pilnai įvykdytumėte savo sutartinius įsipareigojimus."
       />
 
       {anyPending && (
-        <div className="flex flex-col gap-2 rounded-[24px] bg-[rgba(238,147,2,0.08)] px-6 py-5">
+        <div className="flex flex-col gap-2 rounded-[24px] [background:color-mix(in_srgb,var(--status-sprendziama)_10%,transparent)] px-6 py-5">
           <div className="flex items-center gap-2">
-            <WarningCircle className="size-6 text-[#ee9302]" />
-            <span className="text-lg font-medium text-[#ee9302]">Svarbu</span>
+            <WarningCircle className="size-6 [color:var(--status-sprendziama)]" />
+            <span className="text-lg font-medium [color:var(--status-sprendziama)]">Svarbu</span>
           </div>
-          <p className="text-sm leading-5 text-foreground/85">
+          <p className="text-sm leading-relaxed text-foreground/85">
             Prašome sudaryti paslaugų sutartis per 10 dienų po nuosavybės registracijos.
           </p>
         </div>
       )}
 
       {total > 0 && (
-        <div className="flex flex-col gap-8 rounded-[24px] bg-white p-6">
+        <div className="flex flex-col gap-8 rounded-[24px] bg-card p-6">
           <div className="flex items-start justify-between">
             <div className="flex flex-col gap-2">
-              <span className="text-2xl font-medium leading-8 tracking-[-0.48px] text-foreground">
+              <span className="text-2xl font-medium leading-8 tracking-tight text-foreground">
                 Sutarčių sudarymo eiga
               </span>
               <span className="text-base text-foreground">
-                Užbaikite likusius žingsnius, kad pilnai paruoštumėte savo butą.
+                Užbaikite likusius žingsnius, kad pilnai įvykdytumėte savo sutartinius įsipareigojimus.
               </span>
             </div>
             <span
               className={`text-xs font-medium rounded-[4px] border px-3 py-2 ${
                 allDone
-                  ? 'text-[#3e8000] bg-[rgba(62,128,0,0.08)] border-[rgba(62,128,0,0.15)]'
-                  : 'text-[#ee9302] bg-[rgba(238,147,2,0.08)] border-[rgba(238,147,2,0.15)]'
+                  ? '[color:var(--status-atlikta)] [background:color-mix(in_srgb,var(--status-atlikta)_10%,transparent)] [border-color:color-mix(in_srgb,var(--status-atlikta)_20%,transparent)]'
+                  : '[color:var(--status-sprendziama)] [background:color-mix(in_srgb,var(--status-sprendziama)_10%,transparent)] [border-color:color-mix(in_srgb,var(--status-sprendziama)_20%,transparent)]'
               }`}
             >
               {allDone ? 'Įvykdyta' : 'Vykdoma'}
@@ -100,11 +101,11 @@ export default async function SutartysPage() {
           Paslaugos dar nėra sukurtos.
         </p>
       ) : (
-        <div className="flex flex-col gap-2">
+        <PortalAnimateIn className="flex flex-col gap-2">
           {sorted.map((service) => (
             <ServiceCard key={service.id} service={service} />
           ))}
-        </div>
+        </PortalAnimateIn>
       )}
     </div>
   )

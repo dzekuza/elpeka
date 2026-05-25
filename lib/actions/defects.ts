@@ -4,9 +4,36 @@ import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import type { DefectStatus } from '@/lib/types'
-import { validateImageUpload } from '@/lib/upload-validation'
 import { Resend } from 'resend'
-import { DefectStatusEmail } from '@/components/email/defect-status-email'
+import { sanitizeFileName } from '@/lib/upload-validation'
+
+const EXT_MIME: Record<string, string> = {
+  '.mp4': 'video/mp4',
+  '.mov': 'video/quicktime',
+  '.avi': 'video/x-msvideo',
+  '.webm': 'video/webm',
+}
+
+function resolveContentType(file: File): string {
+  const declared = file.type
+  if (declared && declared !== 'application/octet-stream') return declared
+  const ext = file.name.match(/(\.[^.]+)$/)?.[1]?.toLowerCase() ?? ''
+  return EXT_MIME[ext] ?? declared
+}
+
+function isAllowedMediaFile(file: File): boolean {
+  const type = resolveContentType(file)
+  return type.startsWith('image/') || type.startsWith('video/')
+}
+
+function escapeHtml(s: string): string {
+  return s
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#x27;')
+}
 
 async function requireAdmin() {
   const supabase = await createClient()
@@ -46,58 +73,18 @@ async function requireOwner() {
 
 export async function updateDefectStatus(
   defectId: string,
-  status: DefectStatus,
-  adminMessage?: string
+  status: DefectStatus
 ): Promise<void> {
   const { supabase } = await requireAdmin()
 
-  const { data: defect, error } = await supabase
+  const { error } = await supabase
     .from('defects')
     .update({ status })
     .eq('id', defectId)
-    .select('title, unit_id')
-    .single()
 
   if (error) throw new Error(error.message)
 
-  // Send status update email to owner — non-blocking
-  try {
-    const adminClient = createAdminClient()
-
-    const { data: ownership } = await supabase
-      .from('unit_owners')
-      .select('user_id')
-      .eq('unit_id', defect.unit_id)
-      .not('accepted_at', 'is', null)
-      .maybeSingle()
-
-    if (ownership?.user_id) {
-      const { data: userData } = await adminClient.auth.admin.getUserById(
-        ownership.user_id
-      )
-      const ownerEmail = userData?.user?.email
-
-      if (ownerEmail) {
-        const resend = new Resend(process.env.RESEND_API_KEY)
-        const portalUrl = `${process.env.NEXT_PUBLIC_APP_URL}/portal/defects/${defectId}`
-
-        await resend.emails.send({
-          from: process.env.RESEND_FROM_EMAIL!,
-          to: ownerEmail,
-          subject: `Defekto statusas atnaujintas`,
-          react: DefectStatusEmail({
-            defectTitle: defect.title,
-            newStatus: status,
-            adminMessage,
-            portalUrl,
-            ownerEmail,
-          }),
-        })
-      }
-    }
-  } catch (emailErr) {
-    console.error('Failed to send defect status email:', emailErr)
-  }
+  // REMOVED: owner no longer notified on status change per client request 2026-05-25
 
   revalidatePath('/admin/defects')
   revalidatePath(`/admin/defects/${defectId}`)
@@ -125,9 +112,12 @@ export async function addDefectReply(
   if (photoFormData) {
     const file = photoFormData.get('file') as File | null
     if (file) {
-      validateImageUpload(file)
+      if (!isAllowedMediaFile(file)) {
+        throw new Error('Leistini tik vaizdo arba video failai')
+      }
+      if (file.size > 50 * 1024 * 1024) throw new Error('Failas per didelis (max 50MB)')
       const adminClient = createAdminClient()
-      const fileName = `${Date.now()}-${file.name}`
+      const fileName = `${Date.now()}-${sanitizeFileName(file.name)}`
       const storagePath = `defects/${defectId}/replies/${fileName}`
 
       const arrayBuffer = await file.arrayBuffer()
@@ -136,7 +126,7 @@ export async function addDefectReply(
       const { error: uploadError } = await adminClient.storage
         .from('unit-files')
         .upload(storagePath, buffer, {
-          contentType: file.type || 'image/jpeg',
+          contentType: resolveContentType(file),
           upsert: false,
         })
 
@@ -194,38 +184,71 @@ export async function submitDefect(
   if (defectError || !defect) throw new Error(defectError?.message ?? 'Failed to submit defect')
 
   if (photoFormData) {
-    const file = photoFormData.get('file') as File | null
-    if (file) {
-      validateImageUpload(file)
+    const files = photoFormData.getAll('files') as File[]
+    if (files.length > 0) {
+      const MAX_SIZE = 50 * 1024 * 1024
       const adminClient = createAdminClient()
-      const fileName = `${Date.now()}-${file.name}`
-      const storagePath = `defects/${defect.id}/${fileName}`
+      const uploadedPaths: string[] = []
 
-      const arrayBuffer = await file.arrayBuffer()
-      const buffer = new Uint8Array(arrayBuffer)
+      for (const file of files) {
+        if (!isAllowedMediaFile(file)) {
+          throw new Error('Netinkamas failo formatas. Leistini: nuotraukos ir vaizdo įrašai.')
+        }
+        if (file.size > MAX_SIZE) throw new Error(`Failas "${file.name}" per didelis (maks. 50 MB)`)
 
-      const { error: uploadError } = await adminClient.storage
-        .from('unit-files')
-        .upload(storagePath, buffer, {
-          contentType: file.type || 'image/jpeg',
-          upsert: false,
-        })
+        const fileName = `${Date.now()}-${sanitizeFileName(file.name)}`
+        const storagePath = `defects/${defect.id}/${fileName}`
 
-      if (uploadError) throw new Error(uploadError.message)
+        const arrayBuffer = await file.arrayBuffer()
+        const buffer = new Uint8Array(arrayBuffer)
 
-      const { error: attachError } = await supabase
-        .from('defect_attachments')
-        .insert({
-          defect_id: defect.id,
-          storage_path: storagePath,
-          uploaded_by: user.id,
-        })
+        const { error: uploadError } = await adminClient.storage
+          .from('unit-files')
+          .upload(storagePath, buffer, {
+            contentType: resolveContentType(file),
+            upsert: false,
+          })
 
-      if (attachError) {
-        await adminClient.storage.from('unit-files').remove([storagePath])
-        throw new Error(attachError.message)
+        if (uploadError) {
+          await adminClient.storage.from('unit-files').remove(uploadedPaths)
+          throw new Error(uploadError.message)
+        }
+
+        uploadedPaths.push(storagePath)
+
+        const { error: attachError } = await supabase
+          .from('defect_attachments')
+          .insert({
+            defect_id: defect.id,
+            storage_path: storagePath,
+            uploaded_by: user.id,
+          })
+
+        if (attachError) {
+          await adminClient.storage.from('unit-files').remove(uploadedPaths)
+          throw new Error(attachError.message)
+        }
       }
     }
+  }
+
+  // Notify admin about new defect — non-blocking
+  try {
+    const resend = new Resend(process.env.RESEND_API_KEY)
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://elpeka.vercel.app'
+    await resend.emails.send({
+      from: process.env.RESEND_FROM_EMAIL ?? 'noreply@elpekas.lt',
+      to: 'administracija@elpekas.lt',
+      subject: `Naujas defektas: ${title}`,
+      html: `
+        <p>Pateiktas naujas defektas.</p>
+        <p><strong>Pavadinimas:</strong> ${escapeHtml(title)}</p>
+        <p><strong>Aprašymas:</strong> ${escapeHtml(description)}</p>
+        <p><a href="${appUrl}/admin/defects/${defect.id}">Peržiūrėti defektą</a></p>
+      `,
+    })
+  } catch (emailErr) {
+    console.error('Failed to send admin defect notification:', emailErr)
   }
 
   revalidatePath('/portal/defektai')

@@ -10,14 +10,18 @@ const securityHeaders = [
 const nextConfig: NextConfig = {
   experimental: {
     serverActions: {
-      bodySizeLimit: '5mb',
+      bodySizeLimit: '50mb',
     },
+    middlewareClientMaxBodySize: '50mb',
   },
   images: {
     localPatterns: [
       {
         pathname: '/api/storage/preview',
         search: '**',
+      },
+      {
+        pathname: '/images/**',
       },
     ],
     remotePatterns: [

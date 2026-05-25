@@ -12,3 +12,4 @@
 {"type":"screen-added","file":"/Users/rysardgvozdovic/Desktop/projects/elpeka/.superpowers/brainstorm/38241-1779277284/content/approaches.html"}
 {"source":"user-event","type":"click","text":"A\n    \n      Single app, route-based separation (Recommended)\n      One Next.js 15 app. Admin lives at /admin/..., owner portal at /portal/.... Shared Supabase backend. Middleware handles role-based access — admins can't reach /portal and owners can't reach /admin.\n      \n      \n        ProsOne codebase, one deploymentShared auth, DB, storage configSimple to reason about\n        ConsMust be careful with middleware routingAdmin bundle ships to same domain as portal","choice":"a","id":null,"timestamp":1779277783778}
 {"type":"screen-added","file":"/Users/rysardgvozdovic/Desktop/projects/elpeka/.superpowers/brainstorm/38241-1779277284/content/waiting-4.html"}
+{"type":"server-stopped","reason":"owner process exited"}

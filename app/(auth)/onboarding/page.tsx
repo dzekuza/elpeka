@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import {
   BuildingOffice,
   ListChecks,
@@ -17,7 +18,7 @@ const features = [
 
 export default function OnboardingPage() {
   return (
-    <div className="relative flex min-h-screen flex-col bg-[#f2f1f0] md:flex-row">
+    <div className="relative flex min-h-screen flex-col bg-background md:flex-row">
       {/* Logo — top left */}
       <div className="absolute left-6 top-6 z-10 md:left-8 md:top-8">
         {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -60,11 +61,12 @@ export default function OnboardingPage() {
       {/* Right: hero image */}
       <div className="flex flex-1 items-stretch p-4 md:w-1/2 md:flex-none md:items-center">
         <div className="relative w-full overflow-hidden rounded-3xl md:h-[780px]">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
+          <Image
             src="/onboarding-hero.png"
             alt="ELPEKAS portalo vizualas"
-            className="absolute inset-0 h-full w-full object-cover"
+            fill
+            priority
+            className="object-cover"
           />
         </div>
       </div>

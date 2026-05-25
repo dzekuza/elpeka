@@ -4,6 +4,7 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { PageHeader } from '@/components/page-header'
 import { PortalContactCard } from '@/components/portal/portal-contact-card'
 import type { ContactWithDocuments } from '@/lib/types'
+import { PortalAnimateIn } from '@/components/portal/portal-animate-in'
 
 export default async function KontaktaiPage() {
   const supabase = await createClient()
@@ -59,7 +60,7 @@ export default async function KontaktaiPage() {
   return (
     <div className="flex flex-col gap-8">
       <PageHeader
-        title="Kontaktai"
+        title="Rangovai ir kontaktai"
         description="Čia rasite rangovų informaciją susijusią su jūsų objektu"
       />
 
@@ -68,7 +69,7 @@ export default async function KontaktaiPage() {
           Kontaktų kol kas nėra.
         </p>
       ) : (
-        <div className="flex flex-col gap-4">
+        <PortalAnimateIn className="flex flex-col gap-4">
           {contacts.map((contact) => (
             <PortalContactCard
               key={contact.id}
@@ -76,7 +77,7 @@ export default async function KontaktaiPage() {
               documentUrls={contact.documentUrls}
             />
           ))}
-        </div>
+        </PortalAnimateIn>
       )}
     </div>
   )

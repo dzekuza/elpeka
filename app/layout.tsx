@@ -7,11 +7,11 @@ import './globals.css'
 const montserrat = localFont({
   src: [
     {
-      path: '../public/fonts/Montserrat-VariableFont_wght.ttf',
+      path: '../public/fonts/Montserrat-VariableFont_wght.woff2',
       style: 'normal',
     },
     {
-      path: '../public/fonts/Montserrat-Italic-VariableFont_wght.ttf',
+      path: '../public/fonts/Montserrat-Italic-VariableFont_wght.woff2',
       style: 'italic',
     },
   ],

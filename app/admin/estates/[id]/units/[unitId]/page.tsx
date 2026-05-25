@@ -5,11 +5,11 @@ import { Badge } from '@/components/ui/badge'
 import { PageHeader } from '@/components/page-header'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { TechnicalForm } from '@/components/admin/unit-editor/technical-form'
-import { FinancialForm } from '@/components/admin/unit-editor/financial-form'
 import { DocumentsTab } from '@/components/admin/unit-editor/documents-tab'
 import { PhotosTab } from '@/components/admin/unit-editor/photos-tab'
 import { ServicesTab } from '@/components/admin/unit-editor/services-tab'
 import { InviteOwnerDialog } from '@/components/admin/invite-owner-dialog'
+import { OwnerStepsEditor } from '@/components/admin/unit-editor/owner-steps-editor'
 import type { Unit, Document, UnitService } from '@/lib/types'
 
 interface Photo {
@@ -71,7 +71,7 @@ export default async function UnitDetailPage({
 
   const { data: ownerRow } = await supabase
     .from('unit_owners')
-    .select('user_id, accepted_at')
+    .select('id, user_id, accepted_at, visible_steps, notifications_enabled')
     .eq('unit_id', unitId)
     .order('invited_at', { ascending: false })
     .limit(1)
@@ -97,6 +97,7 @@ export default async function UnitDetailPage({
     unit_number: unit.unit_number,
     floor: unit.floor,
     area_sqm: unit.area_sqm,
+    parking: unit.parking ?? null,
     technical_data: unit.technical_data,
     financial_data: unit.financial_data,
     created_at: unit.created_at,
@@ -129,18 +130,17 @@ export default async function UnitDetailPage({
       <Tabs defaultValue="technical">
         <TabsList className="mb-6">
           <TabsTrigger value="technical">Techniniai duomenys</TabsTrigger>
-          <TabsTrigger value="financial">Finansiniai duomenys</TabsTrigger>
+          {/* TODO: Financial tab hidden per client request 2026-05-25 */}
           <TabsTrigger value="documents">Dokumentai</TabsTrigger>
           <TabsTrigger value="photos">Nuotraukos</TabsTrigger>
           <TabsTrigger value="services">Paslaugos</TabsTrigger>
+          {ownerRow?.accepted_at && (
+            <TabsTrigger value="savininkas">Savininkas</TabsTrigger>
+          )}
         </TabsList>
 
         <TabsContent value="technical">
           <TechnicalForm unit={typedUnit} />
-        </TabsContent>
-
-        <TabsContent value="financial">
-          <FinancialForm unit={typedUnit} />
         </TabsContent>
 
         <TabsContent value="documents">
@@ -154,6 +154,16 @@ export default async function UnitDetailPage({
         <TabsContent value="services">
           <ServicesTab unitId={unitId} services={services} />
         </TabsContent>
+
+        {ownerRow?.accepted_at && (
+          <TabsContent value="savininkas">
+            <OwnerStepsEditor
+              unitOwnerId={ownerRow.id}
+              initialVisibleSteps={(ownerRow as { visible_steps?: string[] | null }).visible_steps ?? null}
+              initialNotificationsEnabled={(ownerRow as { notifications_enabled?: boolean }).notifications_enabled ?? true}
+            />
+          </TabsContent>
+        )}
       </Tabs>
     </div>
   )

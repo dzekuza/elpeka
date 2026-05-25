@@ -1,7 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { Input } from '@/components/ui/input'
@@ -13,7 +14,8 @@ export function LoginForm() {
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const router = useRouter()
-  const supabase = createClient()
+  const supabaseRef = useRef(createClient())
+  const supabase = supabaseRef.current
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -39,31 +41,27 @@ export function LoginForm() {
   }
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-[#f2f1f0]">
-      {/* Logo — top left */}
-      <div className="absolute left-4 top-4 z-10">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/logotype-dark.svg" alt="ELPEKAS" width={102} height={41} />
+    <div className="flex min-h-screen bg-background">
+      {/* Left — hero photo */}
+      <div className="relative hidden md:block md:w-1/2">
+        <Image
+          src="/images/login-hero.jpg"
+          alt="Elpekas"
+          fill
+          priority
+          className="object-cover"
+        />
       </div>
 
-      {/* Decorative background element */}
-      <div
-        className="pointer-events-none absolute"
-        style={{
-          left: '58%',
-          top: '50%',
-          transform: 'translate(0, -50%) rotate(-12.5deg)',
-          width: '900px',
-          opacity: 0.08,
-        }}
-      >
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/login-bg.svg" alt="" className="w-full" />
-      </div>
+      {/* Right — form */}
+      <div className="flex w-full flex-col items-center justify-between px-6 py-12 md:w-1/2">
+        {/* Logo */}
+        <div className="self-start">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/logotype-dark.svg" alt="ELPEKAS" width={102} height={41} />
+        </div>
 
-      {/* Centered card */}
-      <div className="flex min-h-screen items-center justify-center px-4">
-        <div className="relative z-10 flex w-full max-w-[412px] flex-col gap-8 rounded-3xl bg-white p-6 shadow-sm">
+        <div className="flex w-full max-w-[412px] flex-col gap-8 rounded-3xl bg-card p-6 shadow-sm">
           {/* Header */}
           <div className="flex flex-col gap-2">
             <h1 className="text-[28px] font-medium leading-8 tracking-[-0.02em] text-foreground">
@@ -71,7 +69,7 @@ export function LoginForm() {
             </h1>
             <p className="text-sm leading-6 text-foreground/80">
               Įveskite savo el. pašto adresą ir slaptažodį, kad prisijungtumėte.
-              Jei jungiatės pirmą kartą, naudokite Elpekas suteiktus prisijungimo duomenis.
+              Jungiantis pirmą kartą, naudokite Elpekas suteiktus prisijungimo duomenis.
             </p>
           </div>
 
@@ -111,39 +109,54 @@ export function LoginForm() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full rounded-lg bg-primary px-4 py-3 text-base font-medium text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-60"
+                className="w-full rounded-lg bg-primary px-4 py-3 text-base font-medium text-primary-foreground transition-[opacity,transform] duration-150 ease-out hover:opacity-90 active:scale-[0.97] disabled:opacity-60 disabled:active:scale-100"
               >
                 {loading ? 'Jungiamasi...' : 'Prisijungti'}
               </button>
 
               <Link
                 href="/forgot-password"
-                className="text-sm font-medium text-primary transition-opacity hover:opacity-80"
+                className="text-sm font-medium text-primary transition-opacity duration-150 ease-out hover:opacity-80"
               >
                 Pamiršote slaptažodį?
               </Link>
             </div>
 
-            <div className="flex flex-col gap-2 border-t border-border pt-4">
-              <p className="text-center text-xs text-foreground/40">Greitas prisijungimas (dev)</p>
-              <div className="flex gap-2">
-                <button
-                  type="button"
-                  onClick={() => { setEmail('admin@admin.com'); setPassword('Admin123.'); }}
-                  className="flex-1 rounded-lg border border-border px-3 py-2 text-xs font-medium text-foreground/60 transition-colors hover:bg-muted"
-                >
-                  Admin
-                </button>
-                <button
-                  type="button"
-                  onClick={() => { setEmail('owner@test.com'); setPassword('Admin123.'); }}
-                  className="flex-1 rounded-lg border border-border px-3 py-2 text-xs font-medium text-foreground/60 transition-colors hover:bg-muted"
-                >
-                  Owner
-                </button>
+            {process.env.NODE_ENV === 'development' && (
+              <div className="flex flex-col gap-2 border-t border-border pt-4">
+                <p className="text-center text-xs text-foreground/40">Greitas prisijungimas (dev)</p>
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={() => { setEmail('admin@admin.com'); setPassword('Admin123.'); }}
+                    className="flex-1 rounded-lg border border-border px-3 py-2 text-xs font-medium text-foreground/60 transition-colors hover:bg-muted"
+                  >
+                    Admin
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => { setEmail('owner@test.com'); setPassword('Admin123.'); }}
+                    className="flex-1 rounded-lg border border-border px-3 py-2 text-xs font-medium text-foreground/60 transition-colors hover:bg-muted"
+                  >
+                    Owner
+                  </button>
+                </div>
               </div>
-            </div>
+            )}
           </form>
+        </div>
+
+        {/* Social icons footer */}
+        <div className="flex gap-4">
+          <a href="https://www.facebook.com/elpekas" aria-label="Elpekas Facebook" className="text-muted-foreground transition-colors duration-150 hover:text-primary">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+          </a>
+          <a href="https://www.instagram.com/elpekas" aria-label="Elpekas Instagram" className="text-muted-foreground transition-colors duration-150 hover:text-primary">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
+          </a>
+          <a href="https://www.linkedin.com/company/elpekas" aria-label="Elpekas LinkedIn" className="text-muted-foreground transition-colors duration-150 hover:text-primary">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6zM2 9h4v12H2z"/><circle cx="4" cy="4" r="2"/></svg>
+          </a>
         </div>
       </div>
     </div>

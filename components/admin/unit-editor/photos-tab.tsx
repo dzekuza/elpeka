@@ -6,6 +6,13 @@ import Image from 'next/image'
 import { toast } from 'sonner'
 import { Camera, Trash, UploadSimple } from '@phosphor-icons/react'
 import { Button } from '@/components/ui/button'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { uploadUnitPhoto, deleteDocument } from '@/lib/actions/units'
 
 interface Photo {
@@ -27,6 +34,7 @@ interface PhotosTabProps {
 
 export function PhotosTab({ unitId, photos }: PhotosTabProps) {
   const [previews, setPreviews] = useState<Preview[]>([])
+  const [category, setCategory] = useState<'progress' | 'final'>('progress')
   const [isPending, startTransition] = useTransition()
 
   const onDrop = useCallback((accepted: File[]) => {
@@ -61,7 +69,7 @@ export function PhotosTab({ unitId, photos }: PhotosTabProps) {
         for (const preview of previews) {
           const fd = new FormData()
           fd.append('file', preview.file)
-          await uploadUnitPhoto(unitId, fd)
+          await uploadUnitPhoto(unitId, fd, category)
           URL.revokeObjectURL(preview.previewUrl)
         }
         setPreviews([])
@@ -85,6 +93,19 @@ export function PhotosTab({ unitId, photos }: PhotosTabProps) {
 
   return (
     <div className="space-y-6">
+      <div className="flex items-center gap-3">
+        <span className="text-sm font-medium text-muted-foreground">Kategorija:</span>
+        <Select value={category} onValueChange={(v) => setCategory(v as 'progress' | 'final')}>
+          <SelectTrigger className="w-48">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="progress">Statybų eiga</SelectItem>
+            <SelectItem value="final">Galutinės</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
       <div
         {...getRootProps()}
         className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors ${

@@ -220,7 +220,7 @@ export function DefectThread({ defect, replies }: DefectThreadProps) {
     startTransition(async () => {
       try {
         await updateDefectStatus(defect.id, status)
-        toast.success('Statusas atnaujintas')
+        toast.success('Defekto statusas atnaujintas')
       } catch {
         toast.error('Nepavyko atnaujinti statuso')
         setCurrentStatus(currentStatus)

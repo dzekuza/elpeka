@@ -12,13 +12,6 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
 import { updateUnitTechnicalData } from '@/lib/actions/units'
 import type { Unit, TechnicalData } from '@/lib/types'
 
@@ -26,17 +19,9 @@ interface FormValues {
   rooms_count: string
   total_area: string
   living_area: string
-  heating_type: string
-  building_materials: string
   construction_year: string
-  floor_covering: string
+  parking: string
 }
-
-const HEATING_OPTIONS = [
-  { value: 'Centrinis', label: 'Centrinis' },
-  { value: 'Autonominis', label: 'Autonominis' },
-  { value: 'Elektra', label: 'Elektra' },
-]
 
 interface TechnicalFormProps {
   unit: Unit
@@ -54,10 +39,8 @@ export function TechnicalForm({ unit }: TechnicalFormProps) {
       rooms_count: toStr(td?.rooms_count),
       total_area: toStr(td?.total_area),
       living_area: toStr(td?.living_area),
-      heating_type: td?.heating_type ?? '',
-      building_materials: td?.building_materials ?? '',
       construction_year: toStr(td?.construction_year),
-      floor_covering: td?.floor_covering ?? '',
+      parking: unit.parking ?? '',
     },
   })
 
@@ -67,13 +50,10 @@ export function TechnicalForm({ unit }: TechnicalFormProps) {
         rooms_count: values.rooms_count !== '' ? parseInt(values.rooms_count, 10) : undefined,
         total_area: values.total_area !== '' ? parseFloat(values.total_area) : undefined,
         living_area: values.living_area !== '' ? parseFloat(values.living_area) : undefined,
-        heating_type: values.heating_type || undefined,
-        building_materials: values.building_materials || undefined,
         construction_year:
           values.construction_year !== '' ? parseInt(values.construction_year, 10) : undefined,
-        floor_covering: values.floor_covering || undefined,
       }
-      await updateUnitTechnicalData(unit.id, data)
+      await updateUnitTechnicalData(unit.id, data, values.parking || null)
       toast.success('Techniniai duomenys išsaugoti')
     } catch (err) {
       toast.error(err instanceof Error ? err.message : 'Klaida išsaugant')
@@ -140,51 +120,17 @@ export function TechnicalForm({ unit }: TechnicalFormProps) {
 
         <FormField
           control={form.control}
-          name="heating_type"
+          name="parking"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Šildymo tipas</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Pasirinkite šildymo tipą" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  {HEATING_OPTIONS.map((opt) => (
-                    <SelectItem key={opt.value} value={opt.value}>
-                      {opt.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="building_materials"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Statybinės medžiagos</FormLabel>
+              <FormLabel>Parkingai</FormLabel>
               <FormControl>
-                <Input {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="floor_covering"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Grindų danga</FormLabel>
-              <FormControl>
-                <Input {...field} />
+                <Input
+                  placeholder="pvz. P-12A"
+                  pattern="^[A-Za-z0-9-]*$"
+                  title="Leistini simboliai: raidės, skaičiai, brūkšnys"
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>

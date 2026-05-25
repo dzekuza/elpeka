@@ -66,7 +66,7 @@ export function ServicesTab({ unitId, services }: ServicesTabProps) {
               <Icon className="size-5 text-foreground" />
               <span className="text-base font-medium text-foreground">{label}</span>
               {existing?.completed_at && (
-                <span className="ml-auto text-xs font-medium text-[#3e8000] bg-[rgba(62,128,0,0.08)] border border-[rgba(62,128,0,0.15)] rounded-[4px] px-3 py-1">
+                <span className="ml-auto text-xs font-medium [color:var(--status-atlikta)] [background:color-mix(in_srgb,var(--status-atlikta)_8%,transparent)] border [border-color:color-mix(in_srgb,var(--status-atlikta)_15%,transparent)] rounded-[4px] px-3 py-1">
                   Įvykdyta
                 </span>
               )}

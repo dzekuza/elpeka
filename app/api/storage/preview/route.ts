@@ -39,9 +39,24 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
 
-    // segments[1] is the unitId — safe because validateStoragePath already
-    // rejected traversal sequences and unknown prefixes
-    const unitId = storagePath.split('/')[1]
+    let unitId: string | null = null
+
+    if (storagePath.startsWith('defects/')) {
+      // defects/{defectId}/... — segment[1] is defectId, not unitId
+      const defectId = storagePath.split('/')[1]
+      if (!defectId) return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+
+      const { data: defect } = await supabase
+        .from('defects')
+        .select('unit_id')
+        .eq('id', defectId)
+        .maybeSingle()
+
+      unitId = defect?.unit_id ?? null
+    } else {
+      // photos/{unitId}/... and documents/{unitId}/... — segment[1] is unitId
+      unitId = storagePath.split('/')[1] ?? null
+    }
 
     if (!unitId) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
@@ -52,7 +67,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       .select('id')
       .eq('unit_id', unitId)
       .eq('user_id', user.id)
-      .single()
+      .maybeSingle()
 
     if (!ownership) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })

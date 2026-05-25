@@ -15,6 +15,7 @@ export interface Unit {
   unit_number: string
   floor: number | null
   area_sqm: number | null
+  parking?: string | null
   technical_data: TechnicalData | null
   financial_data: FinancialData | null
   created_at: string
@@ -24,10 +25,7 @@ export interface TechnicalData {
   rooms_count?: number
   total_area?: number
   living_area?: number
-  heating_type?: string
-  building_materials?: string
   construction_year?: number
-  floor_covering?: string
 }
 
 export interface FinancialData {
@@ -43,6 +41,8 @@ export interface UnitOwner {
   user_id: string
   invited_at: string
   accepted_at: string | null
+  visible_steps?: string[] | null
+  notifications_enabled?: boolean
 }
 
 export interface Defect {
@@ -84,6 +84,7 @@ export interface Document {
   id: string
   unit_id: string
   category: string
+  photo_category?: 'progress' | 'final' | null
   name: string
   storage_path: string
   uploaded_by: string

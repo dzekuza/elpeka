@@ -7,9 +7,14 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { uploadOwnerDocument, deleteOwnerDocument } from '@/lib/actions/units'
+import gsap from 'gsap'
+import { useGSAP } from '@gsap/react'
+
+gsap.registerPlugin(useGSAP)
 
 export type PurchaseStep = {
   number: number
+  key: string
   title: string
   description: string
   canOwnerUpload: boolean
@@ -22,6 +27,34 @@ type Props = {
   unitId: string
 }
 
+
+function StepPanel({ id, children }: { id: string; children: React.ReactNode }) {
+  const panelRef = useRef<HTMLDivElement>(null)
+
+  useGSAP(
+    () => {
+      const mm = gsap.matchMedia()
+      mm.add('(prefers-reduced-motion: no-preference)', () => {
+        gsap.from(panelRef.current!, {
+          y: -6,
+          autoAlpha: 0,
+          duration: 0.25,
+          ease: 'power2.out',
+          clearProps: 'all',
+        })
+      })
+      return () => mm.revert()
+    },
+    { scope: panelRef }
+  )
+
+  return (
+    <div ref={panelRef} id={id} className="pt-6 space-y-4">
+      {children}
+    </div>
+  )
+}
+
 export function StepsAccordion({ steps, unitId }: Props) {
   const [expanded, setExpanded] = useState<number | null>(null)
   const [isPending, startTransition] = useTransition()
@@ -29,6 +62,27 @@ export function StepsAccordion({ steps, unitId }: Props) {
   const [deletingId, setDeletingId] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const pendingStepRef = useRef<PurchaseStep | null>(null)
+  const stepsListRef = useRef<HTMLDivElement>(null)
+
+  useGSAP(
+    () => {
+      const els = Array.from(stepsListRef.current?.children ?? [])
+      if (els.length === 0) return
+      const mm = gsap.matchMedia()
+      mm.add('(prefers-reduced-motion: no-preference)', () => {
+        gsap.from(els, {
+          y: 10,
+          autoAlpha: 0,
+          duration: 0.4,
+          stagger: 0.05,
+          ease: 'power2.out',
+          clearProps: 'all',
+        })
+      })
+      return () => mm.revert()
+    },
+    { scope: stepsListRef }
+  )
 
   const completedCount = steps.filter((s) => s.documents.length > 0).length
   const percentage = Math.round((completedCount / steps.length) * 100)
@@ -76,7 +130,7 @@ export function StepsAccordion({ steps, unitId }: Props) {
     setDeletingId(doc.id)
     startTransition(async () => {
       try {
-        await deleteOwnerDocument(doc.id, doc.storage_path, unitId)
+        await deleteOwnerDocument(doc.id, unitId)
         toast.success('Dokumentas ištrintas')
       } catch (err) {
         toast.error(err instanceof Error ? err.message : 'Klaida trinant dokumentą')
@@ -106,16 +160,14 @@ export function StepsAccordion({ steps, unitId }: Props) {
           </Badge>
         </div>
         <p className="text-sm text-muted-foreground leading-relaxed">
-          Atlikite visus nurodytus žingsnius, kad visi su pirkimu susiję dokumentai būtų vienoje
-          vietoje. Kai visi žingsniai taps žalios spalvos, tai reikš, kad esate įkėlę visus
-          reikalingus dokumentus ir jie yra lengvai pasiekiami peržiūrai.
+          Žalia spalva pažymėti žingsniai reikš, kad visi būtini dokumentai yra sėkmingai įkelti ir pasiekiami peržiūrai.
         </p>
         <div className="space-y-2">
           <div className="flex items-center justify-between text-sm">
             <span className="text-foreground">
               {pendingRange ? (
                 <>
-                  Atlikite veiksmus{' '}
+                  Atlikite žingsnius{' '}
                   <span className="font-semibold">{pendingRange}</span>
                 </>
               ) : (
@@ -126,7 +178,7 @@ export function StepsAccordion({ steps, unitId }: Props) {
           </div>
           <div className="h-3 rounded-full bg-border overflow-hidden">
             <div
-              className="h-full bg-primary rounded-full transition-all duration-500"
+              className="h-full bg-primary rounded-full transition-[width] duration-300 ease-out"
               style={{ width: `${percentage}%` }}
             />
           </div>
@@ -134,7 +186,7 @@ export function StepsAccordion({ steps, unitId }: Props) {
       </div>
 
       {/* Step list */}
-      <div className="space-y-3">
+      <div ref={stepsListRef} className="space-y-3">
         {steps.map((step) => {
           const isComplete = step.documents.length > 0
           const isOpen = expanded === step.number
@@ -145,6 +197,8 @@ export function StepsAccordion({ steps, unitId }: Props) {
               <div className="p-4 sm:p-6">
                 <button
                   type="button"
+                  aria-expanded={isOpen}
+                  aria-controls={`step-panel-${step.number}`}
                   className={cn(
                     'w-full flex items-center justify-between gap-4 text-left',
                     isOpen && 'border-b border-border pb-6'
@@ -184,13 +238,13 @@ export function StepsAccordion({ steps, unitId }: Props) {
                       </Badge>
                     )}
                     <CaretDown
-                      className={cn('size-6 transition-transform shrink-0', isOpen && 'rotate-180')}
+                      className={cn('size-6 transition-transform duration-200 ease-out shrink-0', isOpen && 'rotate-180')}
                     />
                   </div>
                 </button>
 
                 {isOpen && (
-                  <div className="pt-6 space-y-4">
+                  <StepPanel id={`step-panel-${step.number}`}>
                     <p className="text-base text-foreground">{step.description}</p>
 
                     {/* Document list */}
@@ -255,7 +309,7 @@ export function StepsAccordion({ steps, unitId }: Props) {
                         Laukiama administratoriaus
                       </span>
                     )}
-                  </div>
+                  </StepPanel>
                 )}
               </div>
             </div>
