@@ -26,7 +26,7 @@ const STATUS_LABELS: Record<DefectStatus, string> = {
 }
 
 const STATUS_NEXT_STEP: Record<DefectStatus, string> = {
-  pateikta: 'Jūsų pranešimas gautas. Laukiame atsakymo iš vadybininko.',
+  pateikta: 'Jūsų pranešimas gautas.',
   sprendziama: 'Defektas yra sprendžiamas.',
   atlikta: 'Defektas išspręstas. Ačiū!',
 }

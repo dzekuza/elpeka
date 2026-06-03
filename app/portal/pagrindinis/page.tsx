@@ -17,7 +17,7 @@ const PURCHASE_STEPS: Omit<PurchaseStep, 'documents' | 'category'>[] = [
     number: 2,
     key: 'mokėjimai',
     title: 'Mokėjimai',
-    description: 'čia yra gautų mokėjimų dokumentai',
+    description: 'Čia yra gautų mokėjimų dokumentai',
     canOwnerUpload: true,
   },
   {
@@ -38,7 +38,7 @@ const PURCHASE_STEPS: Omit<PurchaseStep, 'documents' | 'category'>[] = [
     number: 5,
     key: 'notarinė-sutartis',
     title: 'Notarinė pirkimo–pardavimo sutartis',
-    description: 'čia yra jūsų notarinė objekto pirkimo-pardavimo sutartis',
+    description: 'Čia yra jūsų notarinė objekto pirkimo-pardavimo sutartis',
     canOwnerUpload: false,
   },
   {
