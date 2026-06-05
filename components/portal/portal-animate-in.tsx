@@ -1,10 +1,5 @@
-'use client'
-
-import { useRef } from 'react'
-import gsap from 'gsap'
-import { useGSAP } from '@gsap/react'
-
-gsap.registerPlugin(useGSAP)
+import { Children } from 'react'
+import { cn } from '@/lib/utils'
 
 interface PortalAnimateInProps {
   children: React.ReactNode
@@ -12,32 +7,20 @@ interface PortalAnimateInProps {
 }
 
 export function PortalAnimateIn({ children, className }: PortalAnimateInProps) {
-  const containerRef = useRef<HTMLDivElement>(null)
-
-  useGSAP(
-    () => {
-      const els = Array.from(containerRef.current?.children ?? [])
-      if (els.length === 0) return
-
-      const mm = gsap.matchMedia()
-      mm.add('(prefers-reduced-motion: no-preference)', () => {
-        gsap.from(els, {
-          y: 12,
-          autoAlpha: 0,
-          duration: 0.45,
-          stagger: 0.06,
-          ease: 'power2.out',
-          clearProps: 'all',
-        })
-      })
-      return () => mm.revert()
-    },
-    { scope: containerRef }
-  )
-
   return (
-    <div ref={containerRef} className={className}>
-      {children}
+    <div className={className}>
+      {Children.map(children, (child, i) => (
+        <div
+          key={i}
+          className={cn(
+            'animate-in fade-in slide-in-from-bottom-3',
+            'duration-[450ms] fill-mode-both motion-reduce:animate-none'
+          )}
+          style={{ animationDelay: `${i * 60}ms` }}
+        >
+          {child}
+        </div>
+      ))}
     </div>
   )
 }

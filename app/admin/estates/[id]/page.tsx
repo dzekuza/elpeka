@@ -31,6 +31,7 @@ export default async function EstateDetailPage({
   const supabase = await createClient()
   const adminClient = createAdminClient()
 
+  // Phase 1: estate existence gate
   const { data: estate, error: estateError } = await supabase
     .from('estates')
     .select('*')
@@ -41,68 +42,56 @@ export default async function EstateDetailPage({
     notFound()
   }
 
-  // Fetch estate photos from storage
   interface EstatePhoto { storagePath: string; url: string; name: string }
-  const estatePhotos: EstatePhoto[] = []
-  {
-    const { data: files } = await adminClient.storage
-      .from('unit-files')
-      .list(`estate-photos/${id}`, { limit: 50 })
 
-    if (files && files.length > 0) {
+  // Phase 2: all independent queries in parallel
+  const [
+    { data: photoFiles },
+    { data: allContactsData },
+    { data: assignedData },
+    { data: units },
+  ] = await Promise.all([
+    adminClient.storage.from('unit-files').list(`estate-photos/${id}`, { limit: 50 }),
+    supabase.from('contacts').select('*').order('title', { ascending: true }),
+    supabase.from('estate_contacts').select('contact_id').eq('estate_id', id),
+    supabase.from('units').select('id, unit_number, floor, area_sqm, created_at').eq('estate_id', id).order('unit_number', { ascending: true }),
+  ])
+
+  // Phase 3: depends on phase 2 results — unit_owners + signed photo URLs in parallel
+  const unitIdList = (units ?? []).map((u) => u.id)
+
+  const [{ data: unitOwnersData }, estatePhotos] = await Promise.all([
+    unitIdList.length > 0
+      ? supabase.from('unit_owners').select('user_id, unit_id, accepted_at').in('unit_id', unitIdList)
+      : Promise.resolve({ data: [] as Array<{ user_id: string; unit_id: string; accepted_at: string | null }> }),
+    (async (): Promise<EstatePhoto[]> => {
+      if (!photoFiles || photoFiles.length === 0) return []
       const { data: signed } = await adminClient.storage
         .from('unit-files')
-        .createSignedUrls(
-          files.map((f) => `estate-photos/${id}/${f.name}`),
-          60 * 60
-        )
-      for (const s of signed ?? []) {
-        if (s.signedUrl && s.path) {
-          const name = s.path.split('/').pop() ?? s.path
-          estatePhotos.push({ storagePath: s.path, url: s.signedUrl, name })
-        }
-      }
-    }
-  }
+        .createSignedUrls(photoFiles.map((f) => `estate-photos/${id}/${f.name}`), 60 * 60)
+      return (signed ?? []).flatMap((s) => {
+        if (!s.signedUrl || !s.path) return []
+        return [{ storagePath: s.path, url: s.signedUrl, name: s.path.split('/').pop() ?? s.path }]
+      })
+    })(),
+  ])
 
-  const { data: allContactsData } = await supabase
-    .from('contacts')
-    .select('*')
-    .order('title', { ascending: true })
-
-  const allContacts = (allContactsData ?? []) as Contact[]
-
-  const { data: assignedData } = await supabase
-    .from('estate_contacts')
-    .select('contact_id')
-    .eq('estate_id', id)
-
-  const assignedIds = new Set((assignedData ?? []).map((r) => r.contact_id))
-  const assignedContacts = allContacts.filter((c) => assignedIds.has(c.id))
-
-  const { data: unitOwnersData } = await supabase
-    .from('unit_owners')
-    .select('user_id, unit_id, accepted_at')
-    .in(
-      'unit_id',
-      await supabase
-        .from('units')
-        .select('id')
-        .eq('estate_id', id)
-        .then(({ data }) => (data ?? []).map((u) => u.id))
-    )
-
+  // Phase 4: owner emails — parallel per user
   const ownerEmails: Record<string, string> = {}
-
   if (unitOwnersData && unitOwnersData.length > 0) {
     const userIds = [...new Set(unitOwnersData.map((o) => o.user_id))]
-    for (const userId of userIds) {
-      const { data: userData } = await adminClient.auth.admin.getUserById(userId)
-      if (userData?.user?.email) {
-        ownerEmails[userId] = userData.user.email
-      }
+    const emailResults = await Promise.all(
+      userIds.map((userId) => adminClient.auth.admin.getUserById(userId))
+    )
+    for (let i = 0; i < userIds.length; i++) {
+      const email = emailResults[i].data?.user?.email
+      if (email) ownerEmails[userIds[i]] = email
     }
   }
+
+  const allContacts = (allContactsData ?? []) as Contact[]
+  const assignedIds = new Set((assignedData ?? []).map((r) => r.contact_id))
+  const assignedContacts = allContacts.filter((c) => assignedIds.has(c.id))
 
   const ownerByUnit: Record<string, { email: string | null; accepted_at: string | null }> = {}
   for (const owner of unitOwnersData ?? []) {
@@ -111,12 +100,6 @@ export default async function EstateDetailPage({
       accepted_at: owner.accepted_at,
     }
   }
-
-  const { data: units } = await supabase
-    .from('units')
-    .select('id, unit_number, floor, area_sqm, created_at')
-    .eq('estate_id', id)
-    .order('unit_number', { ascending: true })
 
   const unitsWithOwners: UnitRow[] = (units ?? []).map((unit) => {
     const owner = ownerByUnit[unit.id]

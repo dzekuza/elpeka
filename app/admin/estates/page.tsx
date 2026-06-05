@@ -1,6 +1,9 @@
+import type { Metadata } from 'next'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { EstateWithUnitCount } from '@/lib/types'
+
+export const metadata: Metadata = { title: 'Nekilnojamasis turtas | ELPEKAS CMS' }
 import { EstateTable } from '@/components/admin/estate-table'
 import { EstateFormDialog } from '@/components/admin/estate-form-dialog'
 import { Button } from '@/components/ui/button'

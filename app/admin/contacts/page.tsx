@@ -1,6 +1,9 @@
+import type { Metadata } from 'next'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { Plus } from '@phosphor-icons/react/dist/ssr'
+
+export const metadata: Metadata = { title: 'Kontaktai | ELPEKAS CMS' }
 import { PageHeader } from '@/components/page-header'
 import { Button } from '@/components/ui/button'
 import { ContactFormDialog } from '@/components/admin/contact-form-dialog'

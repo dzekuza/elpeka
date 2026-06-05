@@ -1,6 +1,9 @@
+import type { Metadata } from 'next'
 import Image from 'next/image'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+
+export const metadata: Metadata = { title: 'Pagrindinis | ELPEKAS' }
 import { StepsAccordion, type PurchaseStep } from '@/components/portal/steps-accordion'
 import type { Document } from '@/lib/types'
 import { PortalAnimateIn } from '@/components/portal/portal-animate-in'

@@ -182,7 +182,7 @@ export function PortalSidebar({ userEmail, activeDefectCount }: PortalSidebarPro
                 <span className="text-white text-sm font-medium truncate max-w-[120px] leading-5">
                   {displayName}
                 </span>
-                <span className="text-white/70 text-xs truncate max-w-[120px] leading-4">
+                <span className="text-white/90 text-xs truncate max-w-[120px] leading-4">
                   {userEmail}
                 </span>
               </div>

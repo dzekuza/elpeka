@@ -1,6 +1,9 @@
+import type { Metadata } from 'next'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
+
+export const metadata: Metadata = { title: 'Kontaktai | ELPEKAS' }
 import { PageHeader } from '@/components/page-header'
 import { PortalContactCard } from '@/components/portal/portal-contact-card'
 import type { ContactWithDocuments } from '@/lib/types'

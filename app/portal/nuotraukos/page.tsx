@@ -1,6 +1,9 @@
+import type { Metadata } from 'next'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
+
+export const metadata: Metadata = { title: 'Nuotraukos | ELPEKAS' }
 import { PageHeader } from '@/components/page-header'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import Image from 'next/image'
@@ -37,6 +40,7 @@ function PhotoGrid({ photos }: { photos: PhotoWithUrl[] }) {
             src={photo.signedUrl}
             alt={photo.name}
             fill
+            sizes="(max-width: 640px) 50vw, 33vw"
             className="object-cover hover:opacity-90 transition-opacity"
           />
           {i === 5 && rest > 0 && (

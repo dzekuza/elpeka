@@ -1,6 +1,9 @@
+import type { Metadata } from 'next'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
+
+export const metadata: Metadata = { title: 'Defektai | ELPEKAS' }
 import { PageHeader } from '@/components/page-header'
 import { DefektaiTabs } from '@/components/portal/defektai-tabs'
 import type { EnrichedReply } from '@/components/portal/defect-card'

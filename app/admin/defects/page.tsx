@@ -1,6 +1,9 @@
+import type { Metadata } from 'next'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
+
+export const metadata: Metadata = { title: 'Defektai ir pastabos | ELPEKAS CMS' }
 import { DefectTable, type DefectRow } from '@/components/admin/defect-table'
 import type { DefectStatus } from '@/lib/types'
 import { PageHeader } from '@/components/page-header'

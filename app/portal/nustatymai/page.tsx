@@ -1,6 +1,9 @@
+import type { Metadata } from 'next'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { AccountSettingsForm } from '@/components/portal/account-settings-form'
+
+export const metadata: Metadata = { title: 'Nustatymai | ELPEKAS' }
 import { PageHeader } from '@/components/page-header'
 import { PortalAnimateIn } from '@/components/portal/portal-animate-in'
 

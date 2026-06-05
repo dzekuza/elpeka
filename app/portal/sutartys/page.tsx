@@ -1,6 +1,9 @@
+import type { Metadata } from 'next'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { PageHeader } from '@/components/page-header'
+
+export const metadata: Metadata = { title: 'Sutartys ir paslaugos | ELPEKAS' }
 import { ServiceCard } from '@/components/portal/service-card'
 import { WarningCircle } from '@phosphor-icons/react/dist/ssr'
 import type { UnitService } from '@/lib/types'
