@@ -99,8 +99,8 @@ export function AdminSidebarCompact({ userEmail }: AdminSidebarCompactProps) {
                   'flex items-center gap-2 p-2 rounded-lg transition-colors',
                   expanded ? 'w-full' : 'w-10 justify-center',
                   isActive
-                    ? 'text-[#c2a475]'
-                    : 'text-white hover:bg-white/10'
+                    ? 'text-white'
+                    : 'text-white/70 hover:text-white hover:bg-white/10'
                 )}
                 style={isActive ? { background: 'rgba(194,164,117,0.1)' } : undefined}
                 title={!expanded ? item.label : undefined}

@@ -41,9 +41,9 @@ export function LoginForm() {
   }
 
   return (
-    <div className="flex min-h-screen bg-background">
+    <main className="flex min-h-screen bg-background">
       {/* Left — hero photo */}
-      <div className="relative hidden md:block md:w-1/2">
+      <div className="relative hidden md:block md:w-1/2" aria-hidden="true">
         <Image
           src="/images/login-hero.jpg"
           alt="Elpekas"
@@ -145,7 +145,7 @@ export function LoginForm() {
         </div>
 
         {/* Social icons footer */}
-        <div className="flex gap-4">
+        <footer className="flex gap-4">
           <a href="https://www.facebook.com/elpekas" aria-label="Elpekas Facebook" className="text-muted-foreground transition-colors duration-150 hover:text-primary">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
           </a>
@@ -155,8 +155,8 @@ export function LoginForm() {
           <a href="https://www.linkedin.com/company/elpekas" aria-label="Elpekas LinkedIn" className="text-muted-foreground transition-colors duration-150 hover:text-primary">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6zM2 9h4v12H2z"/><circle cx="4" cy="4" r="2"/></svg>
           </a>
-        </div>
+        </footer>
       </div>
-    </div>
+    </main>
   )
 }

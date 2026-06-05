@@ -32,8 +32,8 @@ export function ContactRowActions({ contact }: ContactRowActionsProps) {
       <ContactFormDialog
         contact={contact}
         trigger={
-          <Button variant="ghost" size="icon">
-            <PencilSimpleLine className="size-4" />
+          <Button variant="ghost" size="icon" aria-label="Redaguoti">
+            <PencilSimpleLine className="size-4" aria-hidden="true" />
           </Button>
         }
       />
@@ -42,9 +42,10 @@ export function ContactRowActions({ contact }: ContactRowActionsProps) {
         size="icon"
         disabled={isPending}
         onClick={handleDelete}
+        aria-label="Ištrinti"
         className="text-muted-foreground hover:text-destructive"
       >
-        <Trash className="size-4" />
+        <Trash className="size-4" aria-hidden="true" />
       </Button>
     </div>
   )

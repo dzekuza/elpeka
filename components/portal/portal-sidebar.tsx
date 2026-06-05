@@ -118,7 +118,7 @@ export function PortalSidebar({ userEmail, activeDefectCount }: PortalSidebarPro
                 className={cn(
                   'relative flex items-center gap-2 p-2 rounded-lg transition-colors',
                   expanded ? 'w-full' : 'w-10 justify-center',
-                  isActive ? 'text-sidebar-primary bg-sidebar-accent' : 'text-sidebar-foreground hover:bg-white/10'
+                  isActive ? 'text-white bg-sidebar-accent' : 'text-sidebar-foreground hover:bg-white/10'
                 )}
               >
                 <item.icon size={24} className="shrink-0" />

@@ -95,7 +95,7 @@ export function RegisterDefectTab({ unitId, onSuccess }: RegisterDefectTabProps)
         <Card className="rounded-3xl">
           <CardContent className="flex flex-col gap-5">
             <div>
-              <h3 className="text-lg font-medium">1. Defekto informacija</h3>
+              <h2 className="text-lg font-medium">1. Defekto informacija</h2>
               <p className="text-sm text-muted-foreground mt-1">Pateikite aiškų aprašymą</p>
             </div>
 
@@ -133,7 +133,7 @@ export function RegisterDefectTab({ unitId, onSuccess }: RegisterDefectTabProps)
         <Card className="rounded-3xl">
           <CardContent className="flex flex-col gap-5">
             <div>
-              <h3 className="text-lg font-medium">2. Nuotraukų įkėlimas</h3>
+              <h2 className="text-lg font-medium">2. Nuotraukų įkėlimas</h2>
               <p className="text-sm text-muted-foreground mt-1">
                 Pridėkite nuotraukas, kad galėtume geriau suprasti defektą
               </p>
@@ -149,7 +149,7 @@ export function RegisterDefectTab({ unitId, onSuccess }: RegisterDefectTabProps)
                   files.length >= MAX_FILES ? 'cursor-not-allowed opacity-50' : '',
                 ].join(' ')}
               >
-                <input {...getInputProps()} />
+                <input {...getInputProps()} aria-label="Nuotraukų įkėlimas" />
                 <UploadSimple className="h-7 w-7 text-muted-foreground" />
                 <p className="text-sm text-muted-foreground text-center">
                   {isDragActive
