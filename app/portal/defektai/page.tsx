@@ -1,10 +1,9 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
-import { Card, CardContent } from '@/components/ui/card'
 import { PageHeader } from '@/components/page-header'
-import { DefectCard, type EnrichedReply } from '@/components/portal/defect-card'
-import { DefectSubmitModal } from '@/components/portal/defect-submit-modal'
+import { DefektaiTabs } from '@/components/portal/defektai-tabs'
+import type { EnrichedReply } from '@/components/portal/defect-card'
 import type { DefectWithDetails, DefectStatus } from '@/lib/types'
 import { PortalAnimateIn } from '@/components/portal/portal-animate-in'
 
@@ -150,31 +149,16 @@ export default async function DefektaiPage() {
   return (
     <PortalAnimateIn className="space-y-8">
       <PageHeader
-        title="Defektai ir pastabos"
-        action={unitId ? <DefectSubmitModal unitId={unitId} /> : undefined}
+        title="Defektai ir Pastabos"
+        description="Praneškite apie defektus ir sekite jų sprendimo eigą"
       />
 
       {!unitId ? (
         <p className="text-muted-foreground text-sm">
           Nepriskirtas joks butas. Susisiekite su administratoriumi.
         </p>
-      ) : defectsWithUrls.length === 0 ? (
-        <Card>
-          <CardContent className="flex flex-col items-center justify-center py-16 text-center gap-3">
-            <p className="text-muted-foreground text-sm">
-              Kol kas defektų nėra.
-            </p>
-            <p className="text-muted-foreground text-xs">
-              Pastebėję defektą, spauskite &ldquo;Pranešti defektą&rdquo; viršuje.
-            </p>
-          </CardContent>
-        </Card>
       ) : (
-        <div className="flex flex-col gap-4">
-          {defectsWithUrls.map((defect) => (
-            <DefectCard key={defect.id} defect={defect} />
-          ))}
-        </div>
+        <DefektaiTabs unitId={unitId} defects={defectsWithUrls} />
       )}
     </PortalAnimateIn>
   )

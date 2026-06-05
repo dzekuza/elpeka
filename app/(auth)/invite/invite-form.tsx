@@ -81,7 +81,7 @@ export function InviteForm() {
     <div className="flex min-h-screen items-center justify-center bg-background">
       <Card className="w-full max-w-sm">
         <CardHeader className="space-y-1 text-center">
-          <CardTitle className="text-xl font-bold">
+          <CardTitle className="text-xl font-medium">
             Nustatykite slaptažodį
           </CardTitle>
           <CardDescription>

@@ -35,6 +35,8 @@
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) * 1.4);
+
+  --color-notification: var(--notification);
 }
 
 :root {
@@ -86,6 +88,13 @@
   --status-pateikta:    oklch(0.65 0 0);
   --status-sprendziama: oklch(0.75 0.15 75);
   --status-atlikta:     oklch(0.55 0.15 145);
+  /* Defect status — soft outlined badge variants */
+  --status-pateikta-soft:       color-mix(in oklch, var(--status-pateikta) 12%, transparent);
+  --status-pateikta-ring:       color-mix(in oklch, var(--status-pateikta) 25%, transparent);
+  --status-sprendziama-soft:    color-mix(in oklch, var(--status-sprendziama) 12%, transparent);
+  --status-sprendziama-ring:    color-mix(in oklch, var(--status-sprendziama) 25%, transparent);
+  --status-atlikta-soft:        color-mix(in oklch, var(--status-atlikta) 12%, transparent);
+  --status-atlikta-ring:        color-mix(in oklch, var(--status-atlikta) 25%, transparent);
 
   /* Warning / info banner */
   --warning-bg:         oklch(0.97 0.03 90);

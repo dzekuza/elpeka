@@ -34,11 +34,11 @@ const STATUS_NEXT_STEP: Record<DefectStatus, string> = {
 function statusBgClass(status: DefectStatus): string {
   switch (status) {
     case 'pateikta':
-      return '[background:var(--status-pateikta)] text-white'
+      return '[background:var(--status-pateikta-soft)] border [border-color:var(--status-pateikta-ring)] [color:var(--status-pateikta)]'
     case 'sprendziama':
-      return '[background:var(--status-sprendziama)] text-white'
+      return '[background:var(--status-sprendziama-soft)] border [border-color:var(--status-sprendziama-ring)] [color:var(--status-sprendziama)]'
     case 'atlikta':
-      return '[background:var(--status-atlikta)] text-white'
+      return '[background:var(--status-atlikta-soft)] border [border-color:var(--status-atlikta-ring)] [color:var(--status-atlikta)]'
   }
 }
 
@@ -121,16 +121,16 @@ export function DefectCard({ defect }: DefectCardProps) {
   const hasReplies = defect.replies.length > 0
 
   return (
-    <Card className="w-full">
+    <Card className="w-full rounded-3xl">
       <CardHeader>
         <div className="flex items-start justify-between gap-4">
           <div className="flex flex-col gap-1 min-w-0">
-            <span className="text-base font-semibold text-foreground leading-snug">
+            <span className="text-xl sm:text-2xl font-semibold tracking-tight text-foreground leading-tight">
               {defect.title}
             </span>
-            <span className="text-xs text-muted-foreground">{ticketNumber}</span>
+            <span className="text-sm text-muted-foreground">{ticketNumber}</span>
           </div>
-          <Badge className={statusBgClass(defect.status)}>
+          <Badge variant="ghost" className={statusBgClass(defect.status)}>
             {STATUS_LABELS[defect.status]}
           </Badge>
         </div>
@@ -139,30 +139,39 @@ export function DefectCard({ defect }: DefectCardProps) {
       <CardContent className="flex flex-col gap-4">
         <DefectTimeline currentStatus={defect.status} dates={dates} />
 
-        <div className="flex items-start gap-2 rounded-lg [background:var(--warning-bg)] border [border-color:var(--warning-border)] px-4 py-3">
-          <Info className="mt-0.5 h-4 w-4 shrink-0 [color:var(--warning-icon)]" />
+        <div className="rounded-lg [background:var(--warning-bg)] border [border-color:var(--warning-border)] px-4 py-3 flex flex-col gap-1.5">
+          <div className="flex items-center gap-2">
+            <Info className="h-5 w-5 shrink-0 [color:var(--warning-icon)]" />
+            <p className="text-base font-semibold [color:var(--warning-icon)]">Kitas žingsnis</p>
+          </div>
           <p className="text-sm [color:var(--warning-text)]">{STATUS_NEXT_STEP[defect.status]}</p>
         </div>
 
         {/* Collapsible original report */}
         {hasContent && (
-          <div className="border rounded-lg overflow-hidden">
-            <Button
-              variant="ghost"
-              className="w-full flex items-center justify-between px-4 py-3 rounded-none h-auto text-sm font-medium"
+          <div className="flex flex-col gap-4">
+            <button
+              type="button"
+              className="flex items-center gap-1.5 text-base font-medium text-primary hover:opacity-75 transition-opacity duration-150 self-start"
               onClick={() => setExpanded((v) => !v)}
             >
-              Jūsų pranešimas
+              Peržiūrėti pranešimą
               {expanded ? <CaretUp className="h-4 w-4" /> : <CaretDown className="h-4 w-4" />}
-            </Button>
+            </button>
             {expanded && (
-              <div className="px-4 pb-4 flex flex-col gap-3 border-t">
+              <div className="flex flex-col gap-3 border-t pt-4">
                 {defect.description && (
-                  <p className="text-sm text-muted-foreground whitespace-pre-wrap pt-3">
-                    {defect.description}
-                  </p>
+                  <div className="flex flex-col gap-1">
+                    <p className="text-sm font-medium text-foreground">Pranešimo aprašymas</p>
+                    <p className="text-sm text-muted-foreground whitespace-pre-wrap">{defect.description}</p>
+                  </div>
                 )}
-                <PhotoRow urls={defect.attachmentUrls} />
+                {defect.attachmentUrls.length > 0 && (
+                  <div className="flex flex-col gap-2">
+                    <p className="text-sm font-medium text-foreground">Nuotraukos:</p>
+                    <PhotoRow urls={defect.attachmentUrls} />
+                  </div>
+                )}
               </div>
             )}
           </div>

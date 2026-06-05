@@ -26,7 +26,7 @@ function TabsList({
     <TabsPrimitive.List
       data-slot="tabs-list"
       className={cn(
-        "flex w-full sm:inline-flex sm:w-auto items-center gap-2 rounded-xl bg-muted p-1 overflow-x-auto scrollbar-none",
+        "inline-flex items-center gap-2 rounded-xl bg-muted p-1 overflow-x-auto scrollbar-none",
         className
       )}
       {...props}
@@ -46,7 +46,7 @@ function TabsTrigger({
     <TabsPrimitive.Trigger
       data-slot="tabs-trigger"
       className={cn(
-        "relative flex flex-1 sm:flex-none sm:shrink-0 items-center justify-center gap-1 rounded-lg px-4 py-2 text-sm font-normal whitespace-nowrap text-foreground transition-all",
+        "relative flex shrink-0 items-center justify-center gap-1 rounded-lg px-4 py-2 text-sm font-normal whitespace-nowrap text-foreground transition-all",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
         "disabled:pointer-events-none disabled:opacity-50",
         "data-[state=active]:bg-card data-[state=active]:shadow-[0_0_2px_rgba(0,0,0,0.08)]",
@@ -56,7 +56,7 @@ function TabsTrigger({
     >
       {children}
       {badge != null && badge > 0 && (
-        <span className="absolute right-2 top-[12.5px] flex size-[19px] items-center justify-center rounded-full bg-notification text-[12px] font-medium leading-none text-white">
+        <span className="flex size-[19px] shrink-0 items-center justify-center rounded-full bg-notification text-[12px] font-medium leading-none text-white">
           {badge}
         </span>
       )}

@@ -221,10 +221,10 @@ export function StepsAccordion({ steps, unitId }: Props) {
                         {step.number}
                       </span>
                     </div>
-                    <div className="flex flex-col gap-0.5">
-                      <span className="text-base sm:text-2xl font-semibold tracking-tight">{step.title}</span>
+                    <div className="flex flex-col gap-1">
+                      <span className="text-base sm:text-2xl font-medium">{step.title}</span>
                       {isComplete && (
-                        <span className="text-xs text-muted-foreground">
+                        <span className="text-sm text-muted-foreground">
                           {step.documents.length} {step.documents.length === 1 ? 'dokumentas' : 'dokumentai'}
                         </span>
                       )}

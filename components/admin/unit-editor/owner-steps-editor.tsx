@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button'
 import { updateOwnerVisibleSteps, updateOwnerNotifications } from '@/lib/actions/units'
 
 const ALL_STEPS = [
+  { key: 'preliminari-sutartis', label: 'Preliminari sutartis' },
   { key: 'mokėjimai', label: 'Mokėjimai' },
   { key: 'banko-sutartis', label: 'Banko sutartis ir turto vertinimas' },
   { key: 'kadastras', label: 'Kadastrinių matavimų byla' },

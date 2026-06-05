@@ -36,7 +36,7 @@ export function PortalBottomNav({ activeDefectCount }: PortalBottomNavProps) {
               <span className="relative">
                 <Icon className="size-5" weight={isActive ? 'fill' : 'regular'} />
                 {isBadge && activeDefectCount > 0 && (
-                  <span className="absolute -right-2 -top-1.5 flex min-w-[16px] h-[16px] items-center justify-center rounded-full bg-[var(--notification)] px-1 text-[9px] font-semibold leading-none text-white">
+                  <span className="absolute -right-2 -top-1.5 flex min-w-[16px] h-[16px] items-center justify-center rounded-full bg-notification px-1 text-[9px] font-semibold leading-none text-white">
                     {activeDefectCount}
                   </span>
                 )}
