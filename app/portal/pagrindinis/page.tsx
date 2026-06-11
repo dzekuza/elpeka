@@ -13,7 +13,7 @@ const PURCHASE_STEPS: Omit<PurchaseStep, 'documents' | 'category'>[] = [
     number: 1,
     key: 'preliminari-sutartis',
     title: 'Preliminari sutartis',
-    description: 'Čia yra jūsų preliminari buto pirkimo-pardavimo sutartis.',
+    description: 'Čia yra jūsų preliminari objekto pirkimo-pardavimo sutartis.',
     canOwnerUpload: false,
   },
   {

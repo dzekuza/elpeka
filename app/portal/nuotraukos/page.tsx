@@ -6,9 +6,9 @@ import { createAdminClient } from '@/lib/supabase/admin'
 export const metadata: Metadata = { title: 'Nuotraukos | ELPEKAS' }
 import { PageHeader } from '@/components/page-header'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import Image from 'next/image'
 import type { Document } from '@/lib/types'
 import { PortalAnimateIn } from '@/components/portal/portal-animate-in'
+import { PhotoGallery } from '@/components/portal/photo-gallery'
 
 interface PhotoWithUrl extends Document {
   signedUrl: string
@@ -20,38 +20,6 @@ function formatDate(dateStr: string) {
     month: 'long',
     day: 'numeric',
   })
-}
-
-function PhotoGrid({ photos }: { photos: PhotoWithUrl[] }) {
-  const visible = photos.slice(0, 6)
-  const rest = photos.length - 6
-
-  return (
-    <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-      {visible.map((photo, i) => (
-        <a
-          key={photo.id}
-          href={photo.signedUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="relative aspect-square overflow-hidden rounded-lg"
-        >
-          <Image
-            src={photo.signedUrl}
-            alt={photo.name}
-            fill
-            sizes="(max-width: 640px) 50vw, 33vw"
-            className="object-cover hover:opacity-90 transition-opacity"
-          />
-          {i === 5 && rest > 0 && (
-            <div className="absolute inset-0 flex items-center justify-center rounded-lg bg-black/50">
-              <span className="text-lg font-semibold text-white">+{rest}</span>
-            </div>
-          )}
-        </a>
-      ))}
-    </div>
-  )
 }
 
 function GallerySection({
@@ -76,16 +44,11 @@ function GallerySection({
           <p className="py-6 text-center text-sm text-muted-foreground">Nuotraukų nėra</p>
         ) : (
           <>
-            <PhotoGrid photos={photos} />
+            <PhotoGallery photos={photos} />
             <div className="flex items-center justify-between text-sm text-muted-foreground">
               <span>{photos.length} nuotrauka(-ų)</span>
               {latest && <span>{formatDate(latest.created_at)}</span>}
             </div>
-            {photos.length > 6 && (
-              <p className="text-xs text-muted-foreground">
-                Rodoma {Math.min(6, photos.length)} iš {photos.length}. Atidarykite nuotrauką, kad peržiūrėtumėte visas.
-              </p>
-            )}
           </>
         )}
       </CardContent>
@@ -141,21 +104,21 @@ export default async function NuotraukosPage() {
     <div className="flex flex-col gap-8">
       <PageHeader
         title="Objekto nuotraukos"
-        description="Statybų eigos ir galutinės buto nuotraukos."
+        description="Statybų eigos ir galutinės objekto nuotraukos."
       />
 
       <PortalAnimateIn className="flex flex-col gap-8">
-      <GallerySection
-        title="Statybų eigos nuotraukos"
-        subtitle="Nuotraukos fiksuojančios statybų eigą"
-        photos={progressPhotos}
-      />
+        <GallerySection
+          title="Statybų eigos nuotraukos"
+          subtitle="Nuotraukos fiksuojančios statybų eigą"
+          photos={progressPhotos}
+        />
 
-      <GallerySection
-        title="Galutinės buto nuotraukos"
-        subtitle="Baigtų darbų ir galutinės būklės nuotraukos"
-        photos={finalPhotos}
-      />
+        <GallerySection
+          title="Galutinės objekto nuotraukos"
+          subtitle="Baigtų darbų ir galutinės būklės nuotraukos"
+          photos={finalPhotos}
+        />
       </PortalAnimateIn>
     </div>
   )

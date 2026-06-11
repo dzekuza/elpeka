@@ -54,14 +54,13 @@ export function LoginForm() {
       </div>
 
       {/* Right — form */}
-      <div className="flex w-full flex-col items-center justify-between px-6 py-12 md:w-1/2">
-        {/* Logo */}
-        <div className="self-start">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/logotype-dark.svg" alt="ELPEKAS" width={102} height={41} />
-        </div>
-
+      <div className="flex w-full flex-col items-center justify-center gap-8 px-6 py-12 md:w-1/2">
         <div className="flex w-full max-w-[412px] flex-col gap-8 rounded-3xl bg-card p-6 shadow-sm">
+          {/* Logo */}
+          <div className="flex justify-center">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/logotype-dark.svg" alt="ELPEKAS" width={102} height={41} />
+          </div>
           {/* Header */}
           <div className="flex flex-col gap-2">
             <h1 className="text-[28px] font-medium leading-8 tracking-[-0.02em] text-foreground">

@@ -46,10 +46,7 @@ export default async function SutartysPage() {
 
   return (
     <div className="flex flex-col gap-8">
-      <PageHeader
-        title="Paslaugų teikimo sutartys"
-        description="Užbaikite likusius žingsnius, kad pilnai įvykdytumėte savo sutartinius įsipareigojimus."
-      />
+      <PageHeader title="Paslaugų teikimo sutartys" />
 
       {anyPending && (
         <div className="flex flex-col gap-2 rounded-[24px] [background:color-mix(in_srgb,var(--status-sprendziama)_10%,transparent)] px-6 py-5">
