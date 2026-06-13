@@ -11,7 +11,8 @@ import { PortalAnimateIn } from '@/components/portal/portal-animate-in'
 import { PhotoGallery } from '@/components/portal/photo-gallery'
 
 interface PhotoWithUrl extends Document {
-  signedUrl: string
+  thumbUrl: string
+  fullUrl: string
 }
 
 function formatDate(dateStr: string) {
@@ -85,10 +86,21 @@ export default async function NuotraukosPage() {
     if (docs && docs.length > 0) {
       const withUrls = await Promise.all(
         (docs as Document[]).map(async (doc) => {
-          const { data } = await adminClient.storage
-            .from('unit-files')
-            .createSignedUrl(doc.storage_path, 3600)
-          return { ...doc, signedUrl: data?.signedUrl ?? '' } as PhotoWithUrl
+          // Resize at the source so the browser/Next optimizer never has to
+          // download multi-MB originals (the optimizer was timing out on them).
+          const [thumb, full] = await Promise.all([
+            adminClient.storage
+              .from('unit-files')
+              .createSignedUrl(doc.storage_path, 3600, { transform: { width: 500, quality: 60 } }),
+            adminClient.storage
+              .from('unit-files')
+              .createSignedUrl(doc.storage_path, 3600, { transform: { width: 1440, quality: 75 } }),
+          ])
+          return {
+            ...doc,
+            thumbUrl: thumb.data?.signedUrl ?? '',
+            fullUrl: full.data?.signedUrl ?? '',
+          } as PhotoWithUrl
         })
       )
 

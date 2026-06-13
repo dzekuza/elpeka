@@ -10,7 +10,10 @@ import { cn } from '@/lib/utils'
 interface Photo {
   id: string
   name: string
-  signedUrl: string
+  /** small, source-resized image for grid thumbnails and the lightbox strip */
+  thumbUrl: string
+  /** larger, source-resized image for the featured tile and the lightbox */
+  fullUrl: string
 }
 
 interface PhotoGalleryProps {
@@ -54,7 +57,7 @@ export function PhotoGallery({ photos, updatedLabel }: PhotoGalleryProps) {
     ]
     neighbours.forEach((i) => {
       const img = new window.Image()
-      img.src = photos[i].signedUrl
+      img.src = photos[i].fullUrl
     })
   }, [lightboxIndex, photos])
 
@@ -82,11 +85,12 @@ export function PhotoGallery({ photos, updatedLabel }: PhotoGalleryProps) {
           className="group relative col-span-2 aspect-square overflow-hidden rounded-xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary sm:row-span-2 sm:aspect-auto"
         >
           <Image
-            src={featured.signedUrl}
+            src={featured.fullUrl}
             alt={featured.name}
             fill
             sizes="(max-width: 640px) 100vw, 40vw"
             priority
+            unoptimized
             className="object-cover transition-transform duration-300 group-hover:scale-[1.02]"
           />
         </button>
@@ -102,10 +106,11 @@ export function PhotoGallery({ photos, updatedLabel }: PhotoGalleryProps) {
               className="group relative aspect-square overflow-hidden rounded-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary"
             >
               <Image
-                src={photo.signedUrl}
+                src={photo.thumbUrl}
                 alt={photo.name}
                 fill
                 sizes="(max-width: 640px) 50vw, 20vw"
+                unoptimized
                 className="object-cover transition-transform duration-300 group-hover:scale-[1.04]"
               />
               {isLastVisible && (
@@ -165,7 +170,7 @@ export function PhotoGallery({ photos, updatedLabel }: PhotoGalleryProps) {
             )}
 
             <img
-              src={photos[lightboxIndex].signedUrl}
+              src={photos[lightboxIndex].fullUrl}
               alt={photos[lightboxIndex].name}
               onClick={(e) => e.stopPropagation()}
               className="max-h-full max-w-full rounded-lg object-contain"
@@ -205,10 +210,11 @@ export function PhotoGallery({ photos, updatedLabel }: PhotoGalleryProps) {
                   aria-label={`Nuotrauka ${i + 1}`}
                 >
                   <Image
-                    src={photo.signedUrl}
+                    src={photo.thumbUrl}
                     alt={photo.name}
                     fill
                     sizes="64px"
+                    unoptimized
                     className="object-cover"
                   />
                 </button>
