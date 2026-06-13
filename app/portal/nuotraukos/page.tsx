@@ -43,13 +43,10 @@ function GallerySection({
         {photos.length === 0 ? (
           <p className="py-6 text-center text-sm text-muted-foreground">Nuotraukų nėra</p>
         ) : (
-          <>
-            <PhotoGallery photos={photos} />
-            <div className="flex items-center justify-between text-sm text-muted-foreground">
-              <span>{photos.length} nuotrauka(-ų)</span>
-              {latest && <span>{formatDate(latest.created_at)}</span>}
-            </div>
-          </>
+          <PhotoGallery
+            photos={photos}
+            updatedLabel={latest ? `Atnaujinta ${formatDate(latest.created_at)}` : undefined}
+          />
         )}
       </CardContent>
     </Card>
