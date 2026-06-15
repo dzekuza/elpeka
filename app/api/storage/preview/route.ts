@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { validateStoragePath } from '@/lib/upload-validation'
+import { checkRateLimit } from '@/lib/ratelimit'
 
 // Paths owned by a unit — prefix is folder name, segment[1] is the unitId
 const UNIT_OWNED_PREFIXES = ['photos/', 'documents/', 'defects/']
@@ -17,6 +18,9 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
   if (authError || !user) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
+
+  const rateLimitResponse = await checkRateLimit(request, user.id)
+  if (rateLimitResponse) return rateLimitResponse
 
   const storagePath = request.nextUrl.searchParams.get('path')
 
@@ -78,7 +82,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 
   const { data: signedData, error: signedError } = await adminClient.storage
     .from('unit-files')
-    .createSignedUrl(storagePath, 3600)
+    .createSignedUrl(storagePath, 300)
 
   if (signedError || !signedData?.signedUrl) {
     return NextResponse.json({ error: 'Could not generate preview URL' }, { status: 500 })

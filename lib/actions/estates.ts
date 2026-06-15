@@ -1,8 +1,15 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
+import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
+
+const EstateSchema = z.object({
+  name: z.string().min(1).max(200),
+  address: z.string().min(1).max(500),
+  description: z.string().max(2000).optional(),
+})
 
 async function requireAdmin() {
   const supabase = await createClient()
@@ -25,13 +32,14 @@ export async function createEstate(data: {
   description?: string
 }): Promise<{ id: string }> {
   const { supabase } = await requireAdmin()
+  const parsed = EstateSchema.parse(data)
 
   const { data: row, error } = await supabase
     .from('estates')
     .insert({
-      name: data.name,
-      address: data.address,
-      description: data.description ?? null,
+      name: parsed.name,
+      address: parsed.address,
+      description: parsed.description ?? null,
     })
     .select('id')
     .single()
@@ -47,13 +55,14 @@ export async function updateEstate(
   data: { name: string; address: string; description?: string }
 ) {
   const { supabase } = await requireAdmin()
+  const parsed = EstateSchema.parse(data)
 
   const { error } = await supabase
     .from('estates')
     .update({
-      name: data.name,
-      address: data.address,
-      description: data.description ?? null,
+      name: parsed.name,
+      address: parsed.address,
+      description: parsed.description ?? null,
     })
     .eq('id', id)
 

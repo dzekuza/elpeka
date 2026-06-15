@@ -1,6 +1,7 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
+import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { Resend } from 'resend'
@@ -13,11 +14,25 @@ export interface OwnerEntry {
   phone: string
 }
 
+const OwnerEntrySchema = z.object({
+  email: z.string().email().max(254),
+  firstName: z.string().max(100),
+  lastName: z.string().max(100),
+  phone: z.string().max(50),
+})
+
+const InviteSchema = z.object({
+  unitId: z.string().uuid(),
+  owners: z.array(OwnerEntrySchema).min(1).max(20),
+})
+
 export async function inviteOwner(
   unitId: string,
   owners: OwnerEntry[]
 ): Promise<{ error?: string; invited: number }> {
   try {
+    const { unitId: parsedUnitId, owners: parsedOwners } = InviteSchema.parse({ unitId, owners })
+
     const supabase = await createClient()
     const { data: { user }, error: authError } = await supabase.auth.getUser()
 
@@ -29,10 +44,10 @@ export async function inviteOwner(
     const { data: unit } = await supabase
       .from('units')
       .select('unit_number, estates(name)')
-      .eq('id', unitId)
+      .eq('id', parsedUnitId)
       .single()
 
-    const unitNumber = unit?.unit_number ?? unitId
+    const unitNumber = unit?.unit_number ?? parsedUnitId
     const estatesRaw = unit?.estates as unknown
     const estateName =
       estatesRaw && !Array.isArray(estatesRaw) && typeof estatesRaw === 'object'
@@ -43,10 +58,10 @@ export async function inviteOwner(
     const inviteUrl = `${process.env.NEXT_PUBLIC_APP_URL}/invite`
     let invited = 0
 
-    for (const owner of owners) {
+    for (const owner of parsedOwners) {
       const { data: inviteData, error: inviteError } =
         await adminClient.auth.admin.inviteUserByEmail(owner.email, {
-          data: { role: 'owner', unit_id: unitId },
+          data: { role: 'owner', unit_id: parsedUnitId },
           redirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/auth/callback?next=/invite`,
         })
 
@@ -54,7 +69,7 @@ export async function inviteOwner(
 
       await adminClient.from('unit_owners').upsert(
         {
-          unit_id: unitId,
+          unit_id: parsedUnitId,
           user_id: inviteData.user.id,
           first_name: owner.firstName || null,
           last_name: owner.lastName || null,

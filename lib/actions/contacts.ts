@@ -1,10 +1,21 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
+import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import type { Contact, ContactDocument, ContactCategory } from '@/lib/types'
 import { validateDocumentUpload } from '@/lib/upload-validation'
+
+const ContactSchema = z.object({
+  category: z.string().min(1).max(50),
+  title: z.string().min(1).max(200),
+  company_name: z.string().max(200).nullable(),
+  phone: z.string().max(50).nullable(),
+  email: z.string().email().max(254).nullable(),
+  description: z.string().max(2000).nullable(),
+  footnote: z.string().max(1000).nullable(),
+})
 
 async function requireAdmin() {
   const supabase = await createClient()
@@ -24,10 +35,11 @@ export async function createContact(data: {
   footnote: string | null
 }): Promise<Contact> {
   const { supabase } = await requireAdmin()
+  const parsed = ContactSchema.parse(data)
 
   const { data: contact, error } = await supabase
     .from('contacts')
-    .insert(data)
+    .insert(parsed)
     .select()
     .single()
 
@@ -49,10 +61,11 @@ export async function updateContact(
   }
 ): Promise<Contact> {
   const { supabase } = await requireAdmin()
+  const parsed = ContactSchema.parse(data)
 
   const { data: contact, error } = await supabase
     .from('contacts')
-    .update(data)
+    .update(parsed)
     .eq('id', id)
     .select()
     .single()

@@ -2,11 +2,23 @@
 
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
+import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import type { DefectStatus } from '@/lib/types'
 import { Resend } from 'resend'
 import { sanitizeFileName } from '@/lib/upload-validation'
+
+const SubmitDefectSchema = z.object({
+  unitId: z.string().uuid(),
+  title: z.string().min(1).max(200),
+  description: z.string().max(5000),
+})
+
+const ReplySchema = z.object({
+  defectId: z.string().uuid(),
+  body: z.string().min(1).max(5000),
+})
 
 const EXT_MIME: Record<string, string> = {
   '.mp4': 'video/mp4',
@@ -96,6 +108,7 @@ export async function addDefectReply(
   body: string,
   photoFormData?: FormData
 ): Promise<void> {
+  ReplySchema.parse({ defectId, body })
   const { supabase, user } = await requireAdmin()
 
   const { data: reply, error: replyError } = await supabase
@@ -157,6 +170,7 @@ export async function submitDefect(
   description: string,
   photoFormData?: FormData
 ): Promise<void> {
+  SubmitDefectSchema.parse({ unitId, title, description })
   const { supabase, user } = await requireOwner()
 
   const { data: ownership } = await supabase

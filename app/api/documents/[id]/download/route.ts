@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { checkRateLimit } from '@/lib/ratelimit'
 
 export async function GET(
   _request: NextRequest,
@@ -16,6 +17,9 @@ export async function GET(
   if (authError || !user) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
+
+  const rateLimitResponse = await checkRateLimit(_request, user.id)
+  if (rateLimitResponse) return rateLimitResponse
 
   const { id } = await params
 
@@ -46,7 +50,7 @@ export async function GET(
 
   const { data: signedData, error: signedError } = await adminClient.storage
     .from('unit-files')
-    .createSignedUrl(document.storage_path, 3600)
+    .createSignedUrl(document.storage_path, 300)
 
   if (signedError || !signedData?.signedUrl) {
     return NextResponse.json({ error: 'Could not generate download URL' }, { status: 500 })

@@ -1,10 +1,22 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
+import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import type { TechnicalData, FinancialData } from '@/lib/types'
 import { validateImageUpload, validateDocumentUpload, sanitizeFileName, validateFileExtension } from '@/lib/upload-validation'
+
+const UuidSchema = z.string().uuid()
+
+const CreateUnitSchema = z.object({
+  estate_id: z.string().uuid(),
+  unit_number: z.string().min(1).max(50),
+  floor: z.number().int().min(-10).max(200).nullable().optional(),
+  area_sqm: z.number().positive().max(100_000).nullable().optional(),
+})
+
+const DocumentNameSchema = z.string().min(1).max(300)
 
 async function requireAdmin() {
   const supabase = await createClient()
@@ -39,12 +51,13 @@ export async function createUnit(data: {
   technical_data?: TechnicalData
 }) {
   const { supabase } = await requireAdmin()
+  const parsed = CreateUnitSchema.parse(data)
 
   const { error } = await supabase.from('units').insert({
-    estate_id: data.estate_id,
-    unit_number: data.unit_number,
-    floor: data.floor ?? null,
-    area_sqm: data.area_sqm ?? null,
+    estate_id: parsed.estate_id,
+    unit_number: parsed.unit_number,
+    floor: parsed.floor ?? null,
+    area_sqm: parsed.area_sqm ?? null,
     technical_data: data.technical_data ?? null,
   })
 
@@ -100,6 +113,10 @@ export async function uploadUnitDocument(
   if (!file || !category || !name) {
     throw new Error('Trūksta duomenų')
   }
+
+  UuidSchema.parse(unitId)
+  DocumentNameSchema.parse(name)
+  if (!/^[\w-]{1,100}$/.test(category)) throw new Error('Neleistina dokumento kategorija')
 
   validateDocumentUpload(file)
   validateFileExtension(file)

@@ -1,8 +1,15 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
+import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
 import type { ServiceCategory } from '@/lib/types'
+
+const UpsertServiceSchema = z.object({
+  unitId: z.string().uuid(),
+  meter_number: z.string().max(100).nullable(),
+  description: z.string().max(2000).nullable(),
+})
 
 async function requireAdmin() {
   const supabase = await createClient()
@@ -25,6 +32,7 @@ export async function upsertUnitService(
   category: ServiceCategory,
   data: { meter_number: string | null; description: string | null }
 ): Promise<void> {
+  UpsertServiceSchema.parse({ unitId, ...data })
   const { supabase } = await requireAdmin()
   const { error } = await supabase
     .from('unit_services')
