@@ -96,7 +96,7 @@ export function OwnerStepsEditor({
           onCheckedChange={(checked) => handleToggleNotifications(!!checked)}
           disabled={isPending}
         />
-        <div>
+        <div className="flex-1">
           <Label htmlFor="notifications" className="cursor-pointer text-sm font-medium">
             Pranešimai el. paštu
           </Label>
@@ -104,6 +104,14 @@ export function OwnerStepsEditor({
             Savininkas gauna priminimus apie neužbaigtas paslaugas
           </p>
         </div>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => window.open('/api/cron/service-reminders/preview', '_blank')}
+          type="button"
+        >
+          Peržiūrėti laišką
+        </Button>
       </div>
     </div>
   )

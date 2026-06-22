@@ -7,7 +7,6 @@ import {
   AddressBook,
   Buildings,
   CaretDown,
-  Gear,
   SidebarSimple,
   SignOut,
   UserCircle,
@@ -119,13 +118,6 @@ export function AdminSidebarCompact({ userEmail }: AdminSidebarCompactProps) {
       <div ref={profileRef} className="relative">
         {profileOpen && (
           <div className="absolute bottom-full mb-2 left-0 w-44 bg-white rounded-xl shadow-lg p-1 flex flex-col gap-1 z-50">
-            <button
-              className="flex items-center gap-2 w-full px-2 py-2 rounded-lg text-[#1d1e20] text-sm font-medium hover:bg-gray-100 transition-colors"
-              onClick={() => { setProfileOpen(false); router.push('/admin/settings') }}
-            >
-              <Gear size={20} />
-              Nustatymai
-            </button>
             <button
               className="flex items-center gap-2 w-full px-2 py-2 rounded-lg text-red-600 text-sm font-medium hover:bg-red-50 transition-colors"
               onClick={handleSignOut}

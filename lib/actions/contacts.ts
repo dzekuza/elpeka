@@ -5,7 +5,7 @@ import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import type { Contact, ContactDocument, ContactCategory } from '@/lib/types'
-import { validateDocumentUpload } from '@/lib/upload-validation'
+import { validateDocumentUpload, sanitizeFileName } from '@/lib/upload-validation'
 
 const ContactSchema = z.object({
   category: z.string().min(1).max(50),
@@ -108,7 +108,7 @@ export async function uploadContactDocument(
 
   validateDocumentUpload(file)
 
-  const fileName = `${Date.now()}-${file.name}`
+  const fileName = `${Date.now()}-${sanitizeFileName(file.name)}`
   const storagePath = `contacts/${contactId}/${fileName}`
   const buffer = new Uint8Array(await file.arrayBuffer())
 

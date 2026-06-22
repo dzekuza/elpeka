@@ -24,7 +24,6 @@ export default async function PortalLayout({ children }: { children: React.React
       .from('defects')
       .select('id', { count: 'exact', head: true })
       .eq('unit_id', unitId)
-      .neq('status', 'atlikta')
     activeDefectCount = count ?? 0
   }
 

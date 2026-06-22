@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useCallback, useTransition } from 'react'
+import { useRouter } from 'next/navigation'
 import { useDropzone } from 'react-dropzone'
 import { toast } from 'sonner'
 import { Check, Camera, X, ArrowRight, Trash } from '@phosphor-icons/react'
@@ -250,6 +251,7 @@ export function DefectInfoBanner({
 
 /* ─── Main thread ─── */
 export function DefectThread({ defect, replies }: DefectThreadProps) {
+  const router = useRouter()
   const [currentStatus, setCurrentStatus] = useState<DefectStatus>(defect.status)
   const [replyBody, setReplyBody] = useState('')
   const [replyPhoto, setReplyPhoto] = useState<File | null>(null)
@@ -270,6 +272,7 @@ export function DefectThread({ defect, replies }: DefectThreadProps) {
     startTransition(async () => {
       try {
         await deleteDefect(defect.id)
+        router.push('/admin/defects')
       } catch {
         toast.error('Nepavyko ištrinti defekto')
       }

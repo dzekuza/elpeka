@@ -1,7 +1,6 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
-import { redirect } from 'next/navigation'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
@@ -312,5 +311,4 @@ export async function deleteDefect(defectId: string): Promise<void> {
   if (error) throw new Error(error.message)
 
   revalidatePath('/admin/defects')
-  redirect('/admin/defects')
 }
