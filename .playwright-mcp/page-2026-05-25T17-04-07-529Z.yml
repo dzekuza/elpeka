@@ -1,0 +1,51 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - img "Elpekas" [ref=e4]
+    - generic [ref=e5]:
+      - img "ELPEKAS" [ref=e7]
+      - generic [ref=e8]:
+        - generic [ref=e9]:
+          - heading "Sveiki!" [level=1] [ref=e10]
+          - paragraph [ref=e11]: Įveskite savo el. pašto adresą ir slaptažodį, kad prisijungtumėte. Jungiantis pirmą kartą, naudokite Elpekas suteiktus prisijungimo duomenis.
+        - generic [ref=e12]:
+          - generic [ref=e13]:
+            - generic [ref=e14]:
+              - generic [ref=e15]: El. paštas
+              - textbox "El. paštas" [ref=e16]:
+                - /placeholder: your@gmail.com
+            - generic [ref=e17]:
+              - generic [ref=e18]: Slaptažodis
+              - textbox "Slaptažodis" [ref=e19]:
+                - /placeholder: ••••••••••••
+          - generic [ref=e20]:
+            - button "Prisijungti" [ref=e21]
+            - link "Pamiršote slaptažodį?" [ref=e22] [cursor=pointer]:
+              - /url: /forgot-password
+          - generic [ref=e23]:
+            - paragraph [ref=e24]: Greitas prisijungimas (dev)
+            - generic [ref=e25]:
+              - button "Admin" [ref=e26]
+              - button "Owner" [ref=e27]
+      - generic [ref=e28]:
+        - link "Elpekas Facebook" [ref=e29] [cursor=pointer]:
+          - /url: https://www.facebook.com/elpekas
+          - img [ref=e30]
+        - link "Elpekas Instagram" [ref=e32] [cursor=pointer]:
+          - /url: https://www.instagram.com/elpekas
+          - img [ref=e33]
+        - link "Elpekas LinkedIn" [ref=e36] [cursor=pointer]:
+          - /url: https://www.linkedin.com/company/elpekas
+          - img [ref=e37]
+  - region "Notifications alt+T"
+  - generic:
+    - generic:
+      - generic:
+        - generic:
+          - generic:
+            - generic:
+              - generic:
+                - button "Select element":
+                  - generic:
+                    - img
+          - button "Collapse toolbar":
+            - img

@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import { redirect } from 'next/navigation'
-import { createClient } from '@/lib/supabase/server'
+import { createClient, getAuthUser } from '@/lib/supabase/server'
 import { Plus } from '@phosphor-icons/react/dist/ssr'
 
 export const metadata: Metadata = { title: 'Kontaktai | ELPEKAS CMS' }
@@ -23,10 +23,10 @@ const CATEGORY_LABELS: Record<string, string> = {
 }
 
 export default async function AdminContactsPage() {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const user = await getAuthUser()
   if (!user || user.user_metadata?.role !== 'admin') redirect('/login')
 
+  const supabase = await createClient()
   const { data: contacts } = await supabase
     .from('contacts')
     .select('*, documents:contact_documents(*)')

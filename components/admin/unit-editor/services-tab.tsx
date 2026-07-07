@@ -6,7 +6,8 @@ import { Lightning, Drop, ThermometerSimple, Trash } from '@phosphor-icons/react
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Button } from '@/components/ui/button'
-import { upsertUnitService } from '@/lib/actions/services'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { upsertUnitService, setServiceCompletion } from '@/lib/actions/services'
 import type { UnitService, ServiceCategory } from '@/lib/types'
 
 const SERVICE_DEFS: { category: ServiceCategory; label: string; Icon: React.ElementType }[] = [
@@ -55,6 +56,17 @@ export function ServicesTab({ unitId, services }: ServicesTabProps) {
     setValues((prev) => ({ ...prev, [category]: { ...prev[category], [field]: value } }))
   }
 
+  function handleToggleCompletion(category: ServiceCategory, completed: boolean) {
+    startTransition(async () => {
+      try {
+        await setServiceCompletion(unitId, category, completed)
+        toast.success(completed ? 'Pažymėta kaip įvykdyta' : 'Pažymėta kaip laukiama')
+      } catch (err) {
+        toast.error(err instanceof Error ? err.message : 'Klaida')
+      }
+    })
+  }
+
   return (
     <div className="flex flex-col gap-4">
       {SERVICE_DEFS.map(({ category, label, Icon }) => {
@@ -65,11 +77,32 @@ export function ServicesTab({ unitId, services }: ServicesTabProps) {
             <div className="flex items-center gap-2">
               <Icon className="size-5 text-foreground" />
               <span className="text-base font-medium text-foreground">{label}</span>
-              {existing?.completed_at && (
-                <span className="ml-auto text-xs font-medium [color:var(--status-atlikta)] [background:color-mix(in_srgb,var(--status-atlikta)_8%,transparent)] border [border-color:color-mix(in_srgb,var(--status-atlikta)_15%,transparent)] rounded-[4px] px-3 py-1">
-                  Įvykdyta
-                </span>
-              )}
+              <Select
+                disabled={isPending}
+                value={existing?.completed_at ? 'done' : 'pending'}
+                onValueChange={(v) => handleToggleCompletion(category, v === 'done')}
+              >
+                <SelectTrigger
+                  className={
+                    existing?.completed_at
+                      ? 'ml-auto w-auto gap-1.5 rounded-full border-transparent bg-[color-mix(in_srgb,var(--status-atlikta)_8%,transparent)] px-3 py-1 text-xs font-medium text-[color:var(--status-atlikta)] hover:bg-[color-mix(in_srgb,var(--status-atlikta)_12%,transparent)]'
+                      : 'ml-auto w-auto gap-1.5 rounded-full border-transparent bg-[color-mix(in_srgb,var(--status-pateikta)_8%,transparent)] px-3 py-1 text-xs font-medium text-[color:var(--status-pateikta)] hover:bg-[color-mix(in_srgb,var(--status-pateikta)_12%,transparent)]'
+                  }
+                >
+                  <span
+                    className={
+                      existing?.completed_at
+                        ? 'size-1.5 rounded-full bg-[color:var(--status-atlikta)]'
+                        : 'size-1.5 rounded-full bg-[color:var(--status-pateikta)]'
+                    }
+                  />
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent align="end">
+                  <SelectItem value="pending">Laukiama</SelectItem>
+                  <SelectItem value="done">Įvykdyta</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="flex flex-col gap-1.5">

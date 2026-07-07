@@ -1,0 +1,82 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - complementary [ref=e3]:
+      - generic [ref=e4]:
+        - generic [ref=e5]:
+          - img "ELPEKAS" [ref=e7]
+          - button "Sutraukti" [ref=e8]:
+            - img [ref=e9]
+        - navigation [ref=e11]:
+          - link "Pagrindinis" [ref=e12] [cursor=pointer]:
+            - /url: /portal/pagrindinis
+            - img [ref=e13]
+            - generic [ref=e15]: Pagrindinis
+          - link "Defektai ir pastabos 9" [ref=e16] [cursor=pointer]:
+            - /url: /portal/defektai
+            - img [ref=e17]
+            - generic [ref=e19]: Defektai ir pastabos
+            - generic [ref=e20]: "9"
+          - link "Objekto nuotraukos" [ref=e21] [cursor=pointer]:
+            - /url: /portal/nuotraukos
+            - img [ref=e22]
+            - generic [ref=e24]: Objekto nuotraukos
+          - link "Paslaugų sutartys" [ref=e25] [cursor=pointer]:
+            - /url: /portal/sutartys
+            - img [ref=e26]
+            - generic [ref=e28]: Paslaugų sutartys
+          - link "Rangovai ir kontaktai" [ref=e29] [cursor=pointer]:
+            - /url: /portal/kontaktai
+            - img [ref=e30]
+            - generic [ref=e32]: Rangovai ir kontaktai
+      - button "Owner owner@test.com" [ref=e34]:
+        - generic [ref=e35]:
+          - img [ref=e37]
+          - generic [ref=e39]:
+            - generic [ref=e40]: Owner
+            - generic [ref=e41]: owner@test.com
+        - img [ref=e42]
+    - main [ref=e44]:
+      - generic [ref=e46]:
+        - heading "Paslaugų teikimo sutartys" [level=1] [ref=e49]
+        - generic [ref=e50]:
+          - generic [ref=e51]:
+            - generic [ref=e52]:
+              - generic [ref=e53]: Sutarčių sudarymo eiga
+              - generic [ref=e54]: Užbaikite likusius žingsnius, kad pilnai įvykdytumėte savo sutartinius įsipareigojimus.
+            - generic [ref=e55]: Įvykdyta
+          - generic [ref=e57]:
+            - generic [ref=e58]: 4 iš 4 sutarčių
+            - generic [ref=e59]: 100% įvykdyta
+        - generic [ref=e62]:
+          - button "Elektra Įvykdyta" [ref=e65] [cursor=pointer]:
+            - generic [ref=e66]:
+              - img [ref=e67]
+              - generic [ref=e69]: Elektra
+            - generic [ref=e70]:
+              - generic [ref=e71]: Įvykdyta
+              - img [ref=e72]
+          - button "Vanduo Įvykdyta" [ref=e76] [cursor=pointer]:
+            - generic [ref=e77]:
+              - img [ref=e78]
+              - generic [ref=e80]: Vanduo
+            - generic [ref=e81]:
+              - generic [ref=e82]: Įvykdyta
+              - img [ref=e83]
+          - button "Šildymas Įvykdyta" [ref=e87] [cursor=pointer]:
+            - generic [ref=e88]:
+              - img [ref=e89]
+              - generic [ref=e91]: Šildymas
+            - generic [ref=e92]:
+              - generic [ref=e93]: Įvykdyta
+              - img [ref=e94]
+          - button "Atliekų išvežimas Įvykdyta" [ref=e98] [cursor=pointer]:
+            - generic [ref=e99]:
+              - img [ref=e100]
+              - generic [ref=e102]: Atliekų išvežimas
+            - generic [ref=e103]:
+              - generic [ref=e104]: Įvykdyta
+              - img [ref=e105]
+  - region "Notifications alt+T"
+  - button "Open Next.js Dev Tools" [ref=e112] [cursor=pointer]:
+    - img [ref=e113]
+  - alert [ref=e116]

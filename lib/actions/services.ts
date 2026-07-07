@@ -44,6 +44,25 @@ export async function upsertUnitService(
   revalidatePath('/admin/estates', 'layout')
 }
 
+export async function setServiceCompletion(
+  unitId: string,
+  category: ServiceCategory,
+  completed: boolean
+): Promise<void> {
+  const { supabase } = await requireAdmin()
+
+  const { error } = await supabase
+    .from('unit_services')
+    .upsert(
+      { unit_id: unitId, category, completed_at: completed ? new Date().toISOString() : null },
+      { onConflict: 'unit_id,category' }
+    )
+
+  if (error) throw new Error(error.message)
+  revalidatePath('/admin/estates', 'layout')
+  revalidatePath('/portal/sutartys')
+}
+
 export async function markServiceCompleted(serviceId: string): Promise<void> {
   const { supabase } = await requireOwner()
 

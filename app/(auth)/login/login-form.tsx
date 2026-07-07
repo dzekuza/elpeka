@@ -49,6 +49,7 @@ export function LoginForm() {
           alt="Elpekas"
           fill
           priority
+          sizes="50vw"
           className="object-cover"
         />
       </div>

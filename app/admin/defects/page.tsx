@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import { createAdminClient } from '@/lib/supabase/admin'
-import { createClient } from '@/lib/supabase/server'
+import { getAuthUser } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 
 export const metadata: Metadata = { title: 'Defektai ir pastabos | ELPEKAS CMS' }
@@ -9,10 +9,7 @@ import type { DefectStatus } from '@/lib/types'
 import { PageHeader } from '@/components/page-header'
 
 export default async function DefectsPage() {
-  const supabase = await createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+  const user = await getAuthUser()
 
   if (!user) redirect('/login')
 
@@ -20,31 +17,32 @@ export default async function DefectsPage() {
 
   const adminClient = createAdminClient()
 
-  const { data: defectsData } = await adminClient
-    .from('defects')
-    .select(`
-      id,
-      title,
-      status,
-      submitted_by,
-      created_at,
-      unit_id,
-      units (
+  const [{ data: defectsData }, { data: estatesData }] = await Promise.all([
+    adminClient
+      .from('defects')
+      .select(`
         id,
-        unit_number,
-        estate_id,
-        estates (
+        title,
+        status,
+        submitted_by,
+        created_at,
+        unit_id,
+        units (
           id,
-          name
+          unit_number,
+          estate_id,
+          estates (
+            id,
+            name
+          )
         )
-      )
-    `)
-    .order('created_at', { ascending: false })
-
-  const { data: estatesData } = await adminClient
-    .from('estates')
-    .select('id, name')
-    .order('name')
+      `)
+      .order('created_at', { ascending: false }),
+    adminClient
+      .from('estates')
+      .select('id, name')
+      .order('name'),
+  ])
 
   const userIds = [
     ...new Set((defectsData ?? []).map((d) => d.submitted_by).filter(Boolean)),

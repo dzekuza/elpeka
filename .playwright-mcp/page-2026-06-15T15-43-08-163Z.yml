@@ -1,0 +1,114 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - complementary [ref=e3]:
+      - generic [ref=e4]:
+        - generic [ref=e5]:
+          - img "ELPEKAS" [ref=e7]
+          - button "Sutraukti" [ref=e8]:
+            - img [ref=e9]
+        - navigation [ref=e11]:
+          - link "Pagrindinis" [ref=e12] [cursor=pointer]:
+            - /url: /portal/pagrindinis
+            - img [ref=e13]
+            - generic [ref=e15]: Pagrindinis
+          - link "Defektai ir pastabos 9" [ref=e16] [cursor=pointer]:
+            - /url: /portal/defektai
+            - img [ref=e17]
+            - generic [ref=e19]: Defektai ir pastabos
+            - generic [ref=e20]: "9"
+          - link "Objekto nuotraukos" [ref=e21] [cursor=pointer]:
+            - /url: /portal/nuotraukos
+            - img [ref=e22]
+            - generic [ref=e24]: Objekto nuotraukos
+          - link "Paslaugų sutartys" [ref=e25] [cursor=pointer]:
+            - /url: /portal/sutartys
+            - img [ref=e26]
+            - generic [ref=e28]: Paslaugų sutartys
+          - link "Rangovai ir kontaktai" [ref=e29] [cursor=pointer]:
+            - /url: /portal/kontaktai
+            - img [ref=e30]
+            - generic [ref=e32]: Rangovai ir kontaktai
+      - button "Owner owner@test.com" [ref=e34]:
+        - generic [ref=e35]:
+          - img [ref=e37]
+          - generic [ref=e39]:
+            - generic [ref=e40]: Owner
+            - generic [ref=e41]: owner@test.com
+        - img [ref=e42]
+    - main [ref=e44]:
+      - generic [ref=e46]:
+        - generic [ref=e49]:
+          - img "Žvejo namai" [ref=e50]
+          - generic [ref=e52]:
+            - heading "Žvejo namai" [level=1] [ref=e53]
+            - paragraph [ref=e54]: Žvejų g. 2, Klaipėda
+        - generic [ref=e61]:
+          - generic [ref=e62]:
+            - generic [ref=e63]:
+              - heading "Žingsniai" [level=2] [ref=e64]
+              - generic [ref=e65]: Vykdoma
+            - paragraph [ref=e66]: Žalia spalva pažymėti žingsniai reikš, kad visi būtini dokumentai yra sėkmingai įkelti ir pasiekiami peržiūrai.
+            - generic [ref=e68]:
+              - generic [ref=e69]: Atlikite žingsnius 4–8
+              - generic [ref=e70]: 38 % baigta
+          - generic [ref=e73]:
+            - button "1 Preliminari sutartis 1 dokumentas" [ref=e76]:
+              - generic [ref=e77]:
+                - generic [ref=e79]: "1"
+                - generic [ref=e80]:
+                  - generic [ref=e81]: Preliminari sutartis
+                  - generic [ref=e82]: 1 dokumentas
+              - img [ref=e84]
+            - button "2 Mokėjimai 1 dokumentas" [ref=e88]:
+              - generic [ref=e89]:
+                - generic [ref=e91]: "2"
+                - generic [ref=e92]:
+                  - generic [ref=e93]: Mokėjimai
+                  - generic [ref=e94]: 1 dokumentas
+              - img [ref=e96]
+            - button "3 Banko sutartis ir turto vertinimas 1 dokumentas" [ref=e100]:
+              - generic [ref=e101]:
+                - generic [ref=e103]: "3"
+                - generic [ref=e104]:
+                  - generic [ref=e105]: Banko sutartis ir turto vertinimas
+                  - generic [ref=e106]: 1 dokumentas
+              - img [ref=e108]
+            - button "4 Kadastrinių matavimų byla Laukiama" [ref=e112]:
+              - generic [ref=e113]:
+                - generic [ref=e115]: "4"
+                - generic [ref=e117]: Kadastrinių matavimų byla
+              - generic [ref=e118]:
+                - generic [ref=e119]: Laukiama
+                - img [ref=e120]
+            - button "5 Notarinė pirkimo–pardavimo sutartis Laukiama" [ref=e124]:
+              - generic [ref=e125]:
+                - generic [ref=e127]: "5"
+                - generic [ref=e129]: Notarinė pirkimo–pardavimo sutartis
+              - generic [ref=e130]:
+                - generic [ref=e131]: Laukiama
+                - img [ref=e132]
+            - button "6 Registrų centro išrašas Laukiama" [ref=e136]:
+              - generic [ref=e137]:
+                - generic [ref=e139]: "6"
+                - generic [ref=e141]: Registrų centro išrašas
+              - generic [ref=e142]:
+                - generic [ref=e143]: Laukiama
+                - img [ref=e144]
+            - button "7 Pakvitavimas Laukiama" [ref=e148]:
+              - generic [ref=e149]:
+                - generic [ref=e151]: "7"
+                - generic [ref=e153]: Pakvitavimas
+              - generic [ref=e154]:
+                - generic [ref=e155]: Laukiama
+                - img [ref=e156]
+            - button "8 Papildomi dokumentai Laukiama" [ref=e160]:
+              - generic [ref=e161]:
+                - generic [ref=e163]: "8"
+                - generic [ref=e165]: Papildomi dokumentai
+              - generic [ref=e166]:
+                - generic [ref=e167]: Laukiama
+                - img [ref=e168]
+  - region "Notifications alt+T"
+  - button "Open Next.js Dev Tools" [ref=e175] [cursor=pointer]:
+    - img [ref=e176]
+  - alert [ref=e179]
