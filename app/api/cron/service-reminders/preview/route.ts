@@ -13,7 +13,7 @@ export async function GET() {
 
   const html = serviceReminderEmailHtml({
     ownerName: 'Jonas Jonaitis',
-    appUrl: process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000',
+    appUrl: process.env.NEXT_PUBLIC_APP_URL ?? 'https://mano.elpekas.lt/',
     incompleteServices: [
       { name: 'Vandentiekio įrengimas', dueDate: null },
       { name: 'Elektros instaliacijos patikrinimas', dueDate: null },

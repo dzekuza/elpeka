@@ -23,7 +23,7 @@ export async function GET(request: Request) {
 
   const _adminClient = createAdminClient()
   const _resend = new Resend(process.env.RESEND_API_KEY)
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://elpeka.vercel.app'
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://mano.elpekas.lt/'
 
   // Stub — remove this line when implementing
   void appUrl

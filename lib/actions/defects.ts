@@ -249,7 +249,7 @@ export async function submitDefect(
   // Notify admin about new defect — non-blocking
   try {
     const resend = new Resend(process.env.RESEND_API_KEY)
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://elpeka.vercel.app'
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://mano.elpekas.lt/'
     await resend.emails.send({
       from: process.env.RESEND_FROM_EMAIL ?? 'noreply@elpekas.lt',
       to: 'administracija@elpekas.lt',
