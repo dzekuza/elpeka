@@ -1,0 +1,21 @@
+- generic [active] [ref=f1e1]:
+  - generic [ref=f1e2]:
+    - complementary [ref=f1e3]:
+      - generic [ref=f1e4]:
+        - generic [ref=f1e5]:
+          - img "ELPEKAS" [ref=f1e7]
+          - button "Collapse sidebar" [ref=f1e8]
+        - navigation [ref=f1e11]:
+          - link "Nekilnojamasis turtas" [ref=f1e12] [cursor=pointer]:
+            - /url: /admin/estates
+          - link "Defektai ir pastabos" [ref=f1e16] [cursor=pointer]:
+            - /url: /admin/defects
+          - link "Kontaktai" [ref=f1e20] [cursor=pointer]:
+            - /url: /admin/contacts
+      - button "info info@elpekas.lt" [ref=f1e25]:
+        - generic [ref=f1e30]:
+          - generic [ref=f1e31]: info
+          - generic [ref=f1e32]: info@elpekas.lt
+    - main [ref=f1e35]
+  - region "Notifications alt+T"
+  - alert [ref=f1e65]

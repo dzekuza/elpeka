@@ -1,0 +1,31 @@
+- generic [active] [ref=e1]:
+  - main [ref=e2]:
+    - generic [ref=e5]:
+      - generic [ref=e6]:
+        - img "ELPEKAS" [ref=e8]
+        - generic [ref=e9]:
+          - heading "Sveiki!" [level=1] [ref=e10]
+          - paragraph [ref=e11]: Įveskite savo el. pašto adresą ir slaptažodį, kad prisijungtumėte. Jungiantis pirmą kartą, naudokite Elpekas suteiktus prisijungimo duomenis.
+        - generic [ref=e12]:
+          - generic [ref=e13]:
+            - generic [ref=e14]:
+              - generic [ref=e15]: El. paštas
+              - textbox "El. paštas" [ref=e16]:
+                - /placeholder: your@gmail.com
+            - generic [ref=e17]:
+              - generic [ref=e18]: Slaptažodis
+              - textbox "Slaptažodis" [ref=e19]:
+                - /placeholder: ••••••••••••
+          - generic [ref=e20]:
+            - button "Prisijungti" [ref=e21]
+            - link "Pamiršote slaptažodį?" [ref=e22] [cursor=pointer]:
+              - /url: /forgot-password
+      - generic [ref=e23]:
+        - link "Elpekas Facebook" [ref=e24] [cursor=pointer]:
+          - /url: https://www.facebook.com/elpekas
+        - link "Elpekas Instagram" [ref=e27] [cursor=pointer]:
+          - /url: https://www.instagram.com/elpekas
+        - link "Elpekas LinkedIn" [ref=e31] [cursor=pointer]:
+          - /url: https://www.linkedin.com/company/elpekas
+  - region "Notifications alt+T"
+  - alert [ref=e35]

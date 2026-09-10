@@ -1,0 +1,6 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e36]:
+    - heading "Klaida" [level=1] [ref=e37]
+    - button "Bandyti dar kartą" [ref=e38]
+  - region "Notifications alt+T"
+  - alert [ref=e35]: Nekilnojamasis turtas | ELPEKAS CMS
